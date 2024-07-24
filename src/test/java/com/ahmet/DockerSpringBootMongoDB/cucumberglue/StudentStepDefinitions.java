@@ -90,9 +90,11 @@ public class StudentStepDefinitions {
         }
     }
 
-    @And("the response should contain an error message {string}")
-    public void theResponseShouldContainAnErrorMessage(String errorMessage) {
+    @And("the response should contain the following error messages:")
+    public void theResponseShouldContainTheFollowingErrorMessages(List<Map<String, String>> errorMessages) {
         String responseBody = response.getBody();
-        assertThat(responseBody, containsString(errorMessage));
+        for (Map<String, String> errorMessage : errorMessages) {
+            assertThat(responseBody, containsString(errorMessage.get("error_message")));
+        }
     }
 }
