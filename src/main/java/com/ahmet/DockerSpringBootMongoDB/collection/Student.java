@@ -1,6 +1,9 @@
 package com.ahmet.DockerSpringBootMongoDB.collection;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,16 +30,53 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Student {
 
+    /**
+     * The unique identifier for the student.
+     */
     @Id
     private String id;
+
+    /**
+     * The name of the student.
+     * This field is indexed and cannot be blank.
+     */
     @Indexed()
+    @NotBlank(message = "Name is required")
     private String name;
+
+    /**
+     * The email of the student.
+     * This field is indexed uniquely and must be a valid email format.
+     */
     @Indexed(unique = true)
+    @Email(message = "Email is not valid")
     private String email; // Assuming email is unique in the system
+
+    /**
+     * The address of the student is a Class.
+     */
     private Address address;
+
+    /**
+     * The age of the student.
+     * Must be a positive number.
+     */
+    @Min(value = 0, message = "Age must be a positive number")
     private Integer age;
+
+    /**
+     * The list of courses the student is enrolled in.
+     */
     private List<String> courses;
+
+    /**
+     * Indicates if the student is a full-time student.
+     */
     private Boolean fullTime;
+
+    /**
+     * The Grade Point Average of the student.
+     */
     private Double gpa;
     private LocalDateTime graduationDate;
     private LocalDateTime registerDate;

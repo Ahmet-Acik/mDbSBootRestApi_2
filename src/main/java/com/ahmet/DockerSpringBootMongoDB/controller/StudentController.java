@@ -3,15 +3,18 @@ package com.ahmet.DockerSpringBootMongoDB.controller;
 import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.dto.PartialUpdateStudentResponse;
 import com.ahmet.DockerSpringBootMongoDB.dto.UpdateStudentResponse;
+import com.ahmet.DockerSpringBootMongoDB.exception.MissingFieldException;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
 import com.ahmet.DockerSpringBootMongoDB.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +42,7 @@ public class StudentController {
             @ApiResponse(responseCode = "201", description = "Student created successfully"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
-    public ResponseEntity<String> save(@RequestBody Student student) {
+    public ResponseEntity<String> save(@Valid @RequestBody Student student) {
         String result = studentService.save(student);
         String message = String.format("{\"message\": \"A new student is successfully created with ID: %s\"}", result);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,6 +50,18 @@ public class StudentController {
                 .body(message);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingFieldException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleMissingFieldExceptions(MissingFieldException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
     /**
      * Retrieves all students from the database.
      * @return A ResponseEntity containing a list of all students.

@@ -36,9 +36,18 @@ public class StudentServiceImp implements StudentService {
      */
     @Override
     public String save(Student student) {
+        // Perform validation
+        if (student.getName() == null || student.getName().isEmpty()) {
+            throw new MissingFieldException("Name is required");
+        }
+        if (student.getAge() == null || student.getAge() <= 0) {
+            throw new MissingFieldException("Age must be a positive number");
+        }
+        if (student.getEmail() == null || !student.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new MissingFieldException("Email is not valid");
+        }
         return studentRepository.save(student).getId();
     }
-
     /**
      * Retrieves a list of students whose names start with the specified prefix.
      *
