@@ -232,8 +232,13 @@ public class ControllerStudentTest {
      */
     @Test
     public void testPartiallyUpdateStudent() throws Exception {
+        // Mock the service call to check if the student exists
+        given(studentService.findByIdOptional("1")).willReturn(Optional.of(sampleStudent));
+
+        // Mock the service call to partially update the student
         given(studentService.partiallyUpdateStudent(eq("1"), any(Student.class))).willReturn(sampleStudent);
 
+        // Perform the PATCH request
         mockMvc.perform(patch("/students/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleStudent)))

@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for handling student-related operations.
@@ -156,14 +157,14 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "Student not found")
     })
     public ResponseEntity<PartialUpdateStudentResponse> partiallyUpdateStudent(@PathVariable String id, @RequestBody Student student) {
-        Student updatedStudent = studentService.partiallyUpdateStudent(id, student);
-        if (updatedStudent == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            PartialUpdateStudentResponse response = new PartialUpdateStudentResponse(
-                    "Student partially updated successfully with ID: " + id, updatedStudent);
-            return ResponseEntity.ok(response);
+        Optional<Student> existingStudent = studentService.findByIdOptional(id);
+        if (existingStudent.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PartialUpdateStudentResponse("Student not found", null));
         }
+
+        Student updatedStudent = studentService.partiallyUpdateStudent(id, student);
+        PartialUpdateStudentResponse response = new PartialUpdateStudentResponse("Student partially updated successfully with ID: " + id, updatedStudent);
+        return ResponseEntity.ok(response);
     }
 
     /**
