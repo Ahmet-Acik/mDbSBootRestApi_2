@@ -8,6 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.beans.PropertyDescriptor;
@@ -65,8 +67,12 @@ public class StudentServiceImp implements StudentService {
      * @return A list of all students.
      */
     @Override
-    public List<Student> findAll() {
-        return studentRepository.findAll();
+    public ResponseEntity<List<Student>> findAll() {
+        List<Student> students = studentRepository.findAll();
+        if (students.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
     /**

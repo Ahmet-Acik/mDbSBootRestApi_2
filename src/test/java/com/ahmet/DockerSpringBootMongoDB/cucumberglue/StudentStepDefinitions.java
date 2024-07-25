@@ -20,7 +20,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RequiredArgsConstructor
 public class StudentStepDefinitions {
@@ -31,9 +30,10 @@ public class StudentStepDefinitions {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private ResponseEntity<String> response;
-    private Student student;
+    @Autowired
+    private TestContext testContext;
 
+    private Student student;
 
     @Given("the student service is running")
     public void theStudentServiceIsRunning() {
@@ -59,9 +59,11 @@ public class StudentStepDefinitions {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> request = new HttpEntity<>(json, headers);
-            response = restTemplate.postForEntity(url, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            testContext.setResponse(response);
         } catch (HttpClientErrorException e) {
-            response = new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+            ResponseEntity<String> response = new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+            testContext.setResponse(response);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,12 +71,13 @@ public class StudentStepDefinitions {
 
     @Then("the response status should be {int}")
     public void theResponseStatusShouldBe(int statusCode) {
+        ResponseEntity<String> response = testContext.getResponse();
         assertEquals(statusCode, response.getStatusCodeValue());
     }
 
     @Then("the response should contain a message {string}")
     public void theResponseShouldContainAMessage(String message) {
-        String responseBody = response.getBody();
+        String responseBody = testContext.getResponse().getBody();
         String expectedMessage = message.replace("<id>", extractIdFromResponse(responseBody));
         assertThat(responseBody, containsString(expectedMessage));
     }
@@ -92,7 +95,7 @@ public class StudentStepDefinitions {
 
     @And("the response should contain the following error messages:")
     public void theResponseShouldContainTheFollowingErrorMessages(List<Map<String, String>> errorMessages) {
-        String responseBody = response.getBody();
+        String responseBody = testContext.getResponse().getBody();
         for (Map<String, String> errorMessage : errorMessages) {
             assertThat(responseBody, containsString(errorMessage.get("error_message")));
         }

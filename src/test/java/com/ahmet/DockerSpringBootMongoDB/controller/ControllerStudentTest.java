@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus; // Added import
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -145,12 +147,12 @@ public class ControllerStudentTest {
     @Test
     public void testFindAll() throws Exception {
         List<Student> students = Collections.singletonList(sampleStudent);
-        given(studentService.findAll()).willReturn(students);
+        ResponseEntity<List<Student>> responseEntity = new ResponseEntity<>(students, HttpStatus.OK);
+        given(studentService.findAll()).willReturn(responseEntity);
         mockMvc.perform(get("/students/all"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
-
     /**
      * Tests an unspecified endpoint, simulating a GET request to retrieve a student by ID.
      * Verifies the response status is OK and the content matches the expected JSON.

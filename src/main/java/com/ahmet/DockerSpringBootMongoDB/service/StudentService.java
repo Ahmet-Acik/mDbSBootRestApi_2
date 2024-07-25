@@ -1,6 +1,7 @@
 package com.ahmet.DockerSpringBootMongoDB.service;
 
 import com.ahmet.DockerSpringBootMongoDB.collection.Student;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,7 @@ public interface StudentService {
 
     List<Student> getStudentStartWith(String name);
 
-    public List<Student> findAll();
+    ResponseEntity<List<Student>> findAll();
 
     public Student findById(String id);
 

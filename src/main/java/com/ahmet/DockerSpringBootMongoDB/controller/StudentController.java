@@ -4,6 +4,7 @@ import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.dto.PartialUpdateStudentResponse;
 import com.ahmet.DockerSpringBootMongoDB.dto.UpdateStudentResponse;
 import com.ahmet.DockerSpringBootMongoDB.exception.MissingFieldException;
+import com.ahmet.DockerSpringBootMongoDB.exception.ResourceNotFoundException;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
 import com.ahmet.DockerSpringBootMongoDB.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,8 +74,11 @@ public class StudentController {
             @ApiResponse(responseCode = "204", description = "No students found")
     })
     public ResponseEntity<List<Student>> findAll() {
-        List<Student> students = studentService.findAll();
-        return ResponseEntity.ok(students);
+        ResponseEntity<List<Student>> response = studentService.findAll();
+        if (response.getBody() == null || response.getBody().isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return response;
     }
 
     /**
@@ -90,10 +94,12 @@ public class StudentController {
     })
     public ResponseEntity<Student> findById(@PathVariable String id) {
         Student student = studentService.findById(id);
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(student);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(404).body(ex.getMessage());
     }
 
     /**
