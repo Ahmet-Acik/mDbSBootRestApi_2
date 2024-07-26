@@ -186,10 +186,17 @@ public class PartialUpdateStudentStepDefs {
         log.info("Response status is as expected: {}", expectedStatus);
     }
 
+//    @Then("the response should contain {string}")
+//    public void the_response_should_contain(String expectedMessage) {
+//        ResponseEntity<String> response = testContext.getResponse();
+//        assertThat(response.getBody(), containsString(expectedMessage));
+//        log.info("Response contains expected message: {}", expectedMessage);
+//    }
+
     @Then("the response should contain {string}")
     public void the_response_should_contain(String expectedMessage) {
         ResponseEntity<String> response = testContext.getResponse();
-        assertThat(response.getBody(), containsString(expectedMessage));
-        log.info("Response contains expected message: {}", expectedMessage);
+        String responseBody = response.getBody();
+        assertThat(responseBody, containsString(expectedMessage));
     }
 }
