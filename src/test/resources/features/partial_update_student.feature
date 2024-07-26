@@ -5,6 +5,7 @@ Feature: Partially update a student
   So that I can keep student records up to date
 
   Background:
+    Given the student service is running
     Given the following students exist:
       | id   | name        | age | email                   |
       | 1    | John Doe    | 20  | john.doe@example.com    |

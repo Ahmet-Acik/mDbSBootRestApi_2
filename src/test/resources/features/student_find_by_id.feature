@@ -1,6 +1,7 @@
 Feature: Find student by ID
 
-
+  Background:
+    Given the student service is running
 
   Scenario Outline: Successfully find a student by ID
     Given a student with the following data exists:
