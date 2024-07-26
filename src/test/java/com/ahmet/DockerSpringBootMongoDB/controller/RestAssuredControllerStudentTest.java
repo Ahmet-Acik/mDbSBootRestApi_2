@@ -35,7 +35,7 @@ public class RestAssuredControllerStudentTest {
         RestAssured.port = 8080;
         RestAssured.basePath = "/students";
 
-        String studentJson = "{\"name\":\"Sample Student\",\"email\":\"sample@student.com\",\"age\":20}";
+        String studentJson = "{\"name\":\"Sample Student\",\"email\":\"sample@student.com\",\"age\":20,\"address\":{\"street\":\"123 Main St\",\"city\":\"Sample City\",\"postcode\":12345},\"courses\":[\"Math\",\"Science\"],\"fullTime\":true,\"gpa\":3.5,\"graduationDate\":\"2024-05-13T00:00:00\",\"registerDate\":\"2023-10-01T00:00:00\"}";
         Response response = given().contentType(ContentType.JSON)
                 .body(studentJson)
                 .when().post()
@@ -59,7 +59,6 @@ public class RestAssuredControllerStudentTest {
             throw new IllegalStateException("Unexpected response status code: " + response.statusCode() + " or content type: " + response.getContentType());
         }
     }
-
     /**
      * Tear down method to delete the student created during setup.
      * Ensures clean state for subsequent tests.
@@ -153,20 +152,18 @@ public class RestAssuredControllerStudentTest {
     @Test
     public void updateStudentName_shouldReturn200() {
         Logger logger = LoggerFactory.getLogger(this.getClass());
-        String updatedStudentJson = "{\"name\":\"Updated Name Only\"}";
+        String updatedStudentJson = "{\"id\":\"" + studentId + "\", \"name\":\"Updated Name Only\", \"email\":\"sample@student.com\", \"age\":20,\"address\":{\"street\":\"123 Main St\",\"city\":\"Sample City\",\"postcode\":12345},\"courses\":[\"Math\",\"Science\"],\"fullTime\":true,\"gpa\":3.5,\"graduationDate\":\"2024-05-13T00:00:00\",\"registerDate\":\"2023-10-01T00:00:00\"}";
         logger.info("Executing updateStudentName_shouldReturn200 with studentId: {} and payload: {}", studentId, updatedStudentJson);
 
         Response response = given().contentType(ContentType.JSON)
                 .body(updatedStudentJson)
-                .pathParam("id", studentId)
-                .when().put("/{id}")
-                .then()
-                .log().all() // This will log the response for debugging
-                .extract().response();
+                .when()
+                .put("/{id}", studentId);
 
         int statusCode = response.getStatusCode();
-        logger.info("Received status code: {} for updateStudentName_shouldReturn200 with studentId: {}", statusCode, studentId);
-        assertEquals(200, statusCode, "Expected status code 200 but received: " + statusCode);
+        String responseBody = response.getBody().asString();
+        logger.info("Received status code: {} for updateStudentName_shouldReturn200 with studentId: {}. Response body: {}", statusCode, studentId, responseBody);
+        assertEquals(200, statusCode, "Expected status code 200 but received: " + statusCode + ". Response body: " + responseBody);
     }
 
     /**

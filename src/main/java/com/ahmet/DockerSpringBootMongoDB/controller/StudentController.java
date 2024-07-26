@@ -422,6 +422,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -436,13 +438,20 @@ import java.util.Optional;
  * Controller for handling student-related operations.
  * This controller provides endpoints for CRUD operations on students.
  */
+
+
+
 @RestController
 @RequestMapping("/students")
 public class StudentController {
+
     @Autowired
     private StudentService studentService;
+
     @Autowired
     private StudentRepository studentRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     @PostMapping
     @Operation(summary = "Create a new student")
@@ -575,20 +584,43 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "404", description = "Student not found")
     })
-    public ResponseEntity<?> updateStudent(@PathVariable String id, @RequestBody Student student) {
-        if (student.getName() == null || student.getName().isEmpty() || student.getAge() < 0 || !student.getEmail().contains("@")) {
-            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Bad Request\"}");
-        }
 
-        Optional<Student> existingStudent = studentService.findByIdOptional(id);
-        if (existingStudent.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Student not found\"}");
+//    public ResponseEntity<?> updateStudent(@PathVariable String id, @RequestBody Student student) {
+//        logger.info("Updating student with ID: {}", id);
+//
+//        if (student.getName() == null || student.getName().isEmpty() || student.getAge() < 0 || !student.getEmail().contains("@")) {
+//            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Bad Request\"}");
+//        }
+//
+//        Optional<Student> existingStudent = studentService.findByIdOptional(id);
+//        if (existingStudent.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Student not found\"}");
+//        }
+//
+//        student.setId(id); // Ensure the student's ID is set to the path variable
+//        studentService.updateStudentDetails(id, student); // Corrected method call
+//        UpdateStudentResponse response = new UpdateStudentResponse("Student updated successfully with ID: " + id, student);
+//        logger.info("Student updated successfully with ID: {}", id);
+//        return ResponseEntity.ok(response); // You might want to return the updated student or a custom response
+//    }
+    public ResponseEntity<?> updateStudent(@PathVariable String id, @Valid @RequestBody Student student) {
+        logger.info("Updating student with ID: {}", id);
+        try {
+            student.setId(id); // Ensure the student's ID is set to the path variable
+            studentService.updateStudent(id, student);
+            logger.info("Student updated successfully with ID: {}", id);
+            return ResponseEntity.ok("Student updated successfully");
+        } catch (ResourceNotFoundException e) {
+            logger.error("Student not found with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
+        } catch (MissingFieldException e) {
+            logger.error("Missing field in student data: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing field: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating student with ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update student");
         }
-
-        student.setId(id); // Ensure the student's ID is set to the path variable
-        studentService.updateStudentDetails(id, student); // Corrected method call
-        UpdateStudentResponse response = new UpdateStudentResponse("Student updated successfully with ID: " + id, student);
-        return ResponseEntity.ok(response); // You might want to return the updated student or a custom response
     }
+
 }
 

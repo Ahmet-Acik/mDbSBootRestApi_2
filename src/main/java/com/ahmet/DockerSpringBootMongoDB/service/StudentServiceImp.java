@@ -4,6 +4,8 @@ import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.exception.MissingFieldException;
 import com.ahmet.DockerSpringBootMongoDB.exception.ResourceNotFoundException;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -24,6 +26,8 @@ public class StudentServiceImp implements StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImp.class);
 
     @Override
     public String save(Student student) {
@@ -72,13 +76,28 @@ public class StudentServiceImp implements StudentService {
 
     @Override
     public Student updateStudent(String id, Student student) {
-        Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
-        checkForMissingFields(student);
-        updateFields(existingStudent, student);
-        studentRepository.save(existingStudent);
-        return existingStudent;
+        logger.info("Updating student with ID: {}", id);
+        try {
+            Student existingStudent = studentRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
+            checkForMissingFields(student);
+            updateFields(existingStudent, student);
+            studentRepository.save(existingStudent);
+            logger.info("Student updated successfully with ID: {}", id);
+            return existingStudent;
+        } catch (ResourceNotFoundException e) {
+            logger.error("Student not found with ID: {}", id, e);
+            throw e;
+        } catch (MissingFieldException e) {
+            logger.error("Missing field in student data: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error updating student with ID: {}", id, e);
+            throw new RuntimeException("Failed to update student", e);
+        }
     }
+
+
 
     @Override
     public Optional<Student> updateStudentDetails(String id, Student student) {
@@ -130,11 +149,14 @@ public class StudentServiceImp implements StudentService {
             try {
                 Object newValue = field.get(newStudent);
                 if (newValue != null) {
+                    logger.info("Updating field: {} with value: {}", field.getName(), newValue);
                     field.set(existingStudent, newValue);
                 }
             } catch (IllegalAccessException e) {
+                logger.error("Error accessing field: {}. {}", field.getName(), e.getMessage(), e);
                 throw new RuntimeException("Error accessing field: " + field.getName() + ". " + e.getMessage(), e);
             } catch (IllegalArgumentException e) {
+                logger.error("Error setting field: {} with value from new student. {}", field.getName(), e.getMessage(), e);
                 throw new RuntimeException("Error setting field: " + field.getName() + " with value from new student. " + e.getMessage(), e);
             }
         }

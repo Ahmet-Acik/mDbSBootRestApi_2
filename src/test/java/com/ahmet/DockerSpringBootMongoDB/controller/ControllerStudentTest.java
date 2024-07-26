@@ -221,7 +221,7 @@ public class ControllerStudentTest {
 
         // Simplify the assertion to focus on a specific field, if necessary
         // For example, assert only the message part of the response
-        assertTrue(actualResponse.contains("Student updated successfully with ID: 1"));
+        assertTrue(actualResponse.contains("\"message\":\"Student updated successfully with ID: 1\""));
     }
 
     /**
