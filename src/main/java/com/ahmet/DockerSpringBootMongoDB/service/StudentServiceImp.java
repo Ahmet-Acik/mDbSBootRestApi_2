@@ -98,7 +98,6 @@ public class StudentServiceImp implements StudentService {
     }
 
 
-
     @Override
     public Optional<Student> updateStudentDetails(String id, Student student) {
         return studentRepository.findById(id).map(existingStudent -> {
@@ -174,4 +173,5 @@ public class StudentServiceImp implements StudentService {
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
     }
+
 }
