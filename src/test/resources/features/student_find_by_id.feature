@@ -1,5 +1,10 @@
 Feature: Find student by ID
 
+  As an administrator
+  I want to find student records by ID
+  So that I can view the details of a specific student and handle cases
+  where the student does not exist
+
   Background:
     Given the student service is running
 

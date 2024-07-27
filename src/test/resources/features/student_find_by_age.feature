@@ -1,5 +1,10 @@
 Feature: Find students by age range
 
+  As an administrator
+  I want to find students by age range
+  So that I can view the list of students within a specific age range and handle cases
+  where no students are found
+
   Background:
     Given the student service is running
 

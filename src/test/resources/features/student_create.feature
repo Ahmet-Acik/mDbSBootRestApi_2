@@ -1,5 +1,9 @@
 Feature: Student Creation
 
+  As an administrator
+  I want to create student records
+  So that I can add new students to the system and handle invalid data appropriately
+
   Background:
     Given the student service is running
 

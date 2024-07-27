@@ -1,5 +1,10 @@
 Feature: Find all students
 
+  As an administrator
+  I want to find all student records
+  So that I can view the list of students and handle cases
+  where no students are found
+
   Background:
     Given the student service is running
 

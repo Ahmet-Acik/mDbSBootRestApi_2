@@ -1,8 +1,13 @@
 Feature: Delete a student by ID
 
+  As an administrator
+  I want to delete student records
+  So that I can remove outdated or incorrect information and handle cases
+  where the student does not exist
+
   Background:
     Given the student service is running
-    Given the following students exist:
+    And the following students exist:
       | id | name       | age | email               |
       | 1  | John Doe   | 20  | john.doe@example.com|
       | 2  | Jane Smith | 22  | jane.smith@example.com|

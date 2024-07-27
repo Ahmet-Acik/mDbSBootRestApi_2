@@ -1,5 +1,10 @@
 Feature: Find students starting with a given name
 
+  As an administrator
+  I want to find students starting with a given name
+  So that I can view the list of students with a specific name prefix and handle cases
+  where no students are found
+
   Background:
     Given the student service is running
 

@@ -1,5 +1,9 @@
-
 Feature: Update a student by ID
+
+  As an administrator
+  I want to update student information by ID
+  So that I can keep student records up to date and handle cases
+  where the student does not exist or the data is invalid
 
   Background:
     Given the student service is running

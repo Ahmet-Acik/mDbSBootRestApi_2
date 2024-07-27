@@ -2,7 +2,8 @@ Feature: Partially update a student
 
   As an administrator
   I want to partially update student information
-  So that I can keep student records up to date
+  So that I can keep student records up to date and handle cases
+  where the student does not exist
 
   Background:
     Given the student service is running
