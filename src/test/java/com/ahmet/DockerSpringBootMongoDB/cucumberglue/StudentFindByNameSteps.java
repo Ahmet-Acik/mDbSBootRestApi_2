@@ -53,22 +53,6 @@ public class StudentFindByNameSteps {
         assertEquals(statusCode, response.getStatusCodeValue());
     }
 
-//    @Then("the response should contain the following students:")
-//    public void theResponseShouldContainTheFollowingStudents(List<Map<String, String>> expectedStudents) throws JsonProcessingException {
-//        String responseBody = testContext.getResponse().getBody();
-//        CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, Student.class);
-//        List<Student> actualStudents = objectMapper.readValue(responseBody, listType);
-//        assertEquals(expectedStudents.size(), actualStudents.size());
-//        for (int i = 0; i < expectedStudents.size(); i++) {
-//            Map<String, String> expected = expectedStudents.get(i);
-//            Student actual = actualStudents.get(i);
-//            assertEquals(expected.get("id"), actual.getId());
-//            assertEquals(expected.get("name"), actual.getName());
-//            assertEquals(expected.get("age"), String.valueOf(actual.getAge())); // Convert age to String for comparison
-//            assertEquals(expected.get("email"), actual.getEmail());
-//        }
-//    }
-
     @Then("the response should contain the following students:")
     public void theResponseShouldContainTheFollowingStudents(List<Map<String, String>> expectedStudents) throws JsonProcessingException {
         String responseBody = testContext.getResponse().getBody();

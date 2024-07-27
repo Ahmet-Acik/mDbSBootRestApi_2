@@ -1,7 +1,9 @@
-package com.ahmet.DockerSpringBootMongoDB.controller;
+package com.ahmet.DockerSpringBootMongoDB.integration;
 
+import com.ahmet.DockerSpringBootMongoDB.Application;
 import com.ahmet.DockerSpringBootMongoDB.collection.Address;
 import com.ahmet.DockerSpringBootMongoDB.collection.Student;
+import com.ahmet.DockerSpringBootMongoDB.controller.StudentController;
 import com.ahmet.DockerSpringBootMongoDB.dto.PartialUpdateStudentResponse;
 import com.ahmet.DockerSpringBootMongoDB.dto.UpdateStudentResponse;
 import com.ahmet.DockerSpringBootMongoDB.service.StudentService;
@@ -18,6 +20,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -37,13 +41,14 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.eq;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
-public class ControllerStudentTest {
+@SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class ControllerStudent_IT {
 
     @Autowired
     private MockMvc mockMvc;

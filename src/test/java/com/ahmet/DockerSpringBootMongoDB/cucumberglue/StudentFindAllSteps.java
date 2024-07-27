@@ -14,13 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,7 +46,8 @@ public class StudentFindAllSteps {
     @Then("the response should contain a list of students")
     public void theResponseShouldContainAListOfStudents() throws JsonProcessingException {
         String responseBody = testContext.getResponse().getBody();
-        List<Student> students = objectMapper.readValue(responseBody, new TypeReference<List<Student>>() {});
+        List<Student> students = objectMapper.readValue(responseBody, new TypeReference<List<Student>>() {
+        });
         assertThat(students, is(not(empty())));
     }
 

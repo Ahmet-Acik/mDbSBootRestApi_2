@@ -1,5 +1,6 @@
-package com.ahmet.DockerSpringBootMongoDB.controller;
+package com.ahmet.DockerSpringBootMongoDB.integration;
 
+import com.ahmet.DockerSpringBootMongoDB.Application;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -8,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,9 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Integration tests for Student Controller using RestAssured.
  */
-public class RestAssuredControllerStudentTest {
+@SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class RestAssuredControllerStudent_IT {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestAssuredControllerStudentTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestAssuredControllerStudent_IT.class);
 
     private String studentId;
 
