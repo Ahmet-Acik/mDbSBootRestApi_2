@@ -224,7 +224,6 @@
 //}
 
 
-
 //
 //package com.ahmet.DockerSpringBootMongoDB.controller;
 //
@@ -440,7 +439,6 @@ import java.util.Optional;
  */
 
 
-
 @RestController
 @RequestMapping("/students")
 public class StudentController {
@@ -577,78 +575,33 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PutMapping("/{id}")
-//    @Operation(summary = "Update an existing student")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Student updated successfully"),
-//            @ApiResponse(responseCode = "400", description = "Bad Request"),
-//            @ApiResponse(responseCode = "404", description = "Student not found")
-//    })
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an existing student")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Student updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Student not found")
+    })
+    public ResponseEntity<?> updateStudent(@PathVariable String id, @Valid @RequestBody Student student) {
+        logger.info("Updating student with ID: {}", id);
 
-//    public ResponseEntity<?> updateStudent(@PathVariable String id, @RequestBody Student student) {
-//        logger.info("Updating student with ID: {}", id);
-//
-//        if (student.getName() == null || student.getName().isEmpty() || student.getAge() < 0 || !student.getEmail().contains("@")) {
-//            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Bad Request\"}");
-//        }
-//
-//        Optional<Student> existingStudent = studentService.findByIdOptional(id);
-//        if (existingStudent.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Student not found\"}");
-//        }
-//
-//        student.setId(id); // Ensure the student's ID is set to the path variable
-//        studentService.updateStudentDetails(id, student); // Corrected method call
-//        UpdateStudentResponse response = new UpdateStudentResponse("Student updated successfully with ID: " + id, student);
-//        logger.info("Student updated successfully with ID: {}", id);
-//        return ResponseEntity.ok(response); // You might want to return the updated student or a custom response
-//    }
-//    public ResponseEntity<?> updateStudent(@PathVariable String id, @Valid @RequestBody Student student) {
-//        logger.info("Updating student with ID: {}", id);
-//        try {
-//            student.setId(id); // Ensure the student's ID is set to the path variable
-//            studentService.updateStudent(id, student);
-//            logger.info("Student updated successfully with ID: {}", id);
-//            return ResponseEntity.ok("Student updated successfully");
-//        } catch (ResourceNotFoundException e) {
-//            logger.error("Student not found with ID: {}", id, e);
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
-//        } catch (MissingFieldException e) {
-//            logger.error("Missing field in student data: {}", e.getMessage(), e);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing field: " + e.getMessage());
-//        } catch (Exception e) {
-//            logger.error("Error updating student with ID: {}", id, e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update student");
-//        }
-//    }
-//
-@PutMapping("/{id}")
-@Operation(summary = "Update an existing student")
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Student updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Bad Request"),
-        @ApiResponse(responseCode = "404", description = "Student not found")
-})
-public ResponseEntity<?> updateStudent(@PathVariable String id, @Valid @RequestBody Student student) {
-    logger.info("Updating student with ID: {}", id);
+        // Validate the student object
+        if (student.getName() == null || student.getName().isEmpty() || student.getAge() == null || student.getAge() < 0 || student.getEmail() == null || !student.getEmail().contains("@")) {
+            return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Bad Request\"}");
+        }
 
-    // Validate the student object
-    if (student.getName() == null || student.getName().isEmpty() || student.getAge() == null || student.getAge() < 0 || student.getEmail() == null || !student.getEmail().contains("@")) {
-        return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Bad Request\"}");
+        // Check if the student exists
+        Optional<Student> existingStudent = studentService.findByIdOptional(id);
+        if (existingStudent.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Student not found\"}");
+        }
+
+        // Update the student details
+        student.setId(id); // Ensure the student's ID is set to the path variable
+        studentService.updateStudentDetails(id, student); // Corrected method call
+        UpdateStudentResponse response = new UpdateStudentResponse("Student updated successfully with ID: " + id, student);
+        logger.info("Student updated successfully with ID: {}", id);
+        return ResponseEntity.ok(response); // You might want to return the updated student or a custom response
     }
-
-    // Check if the student exists
-    Optional<Student> existingStudent = studentService.findByIdOptional(id);
-    if (existingStudent.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"Student not found\"}");
-    }
-
-    // Update the student details
-    student.setId(id); // Ensure the student's ID is set to the path variable
-    studentService.updateStudentDetails(id, student); // Corrected method call
-    UpdateStudentResponse response = new UpdateStudentResponse("Student updated successfully with ID: " + id, student);
-    logger.info("Student updated successfully with ID: {}", id);
-    return ResponseEntity.ok(response); // You might want to return the updated student or a custom response
-}
 }
 

@@ -8,7 +8,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-@SpringBootTest
+@SpringBootTest (classes = {Application.class,
+        CucumberTestRunner.class},webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @CucumberContextConfiguration
 @RunWith(Cucumber.class)
 @CucumberOptions(

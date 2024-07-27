@@ -21,7 +21,7 @@ import java.util.Arrays;
  */
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.ahmet.DockerSpringBootMongoDB.repository")
-public class DockerSpringBootMongoDbApplication {
+public class Application {
 
     /**
      * Main method to run the Spring Boot application.
@@ -29,7 +29,7 @@ public class DockerSpringBootMongoDbApplication {
      * @param args Command line arguments passed to the application.
      */
     public static void main(String[] args) {
-        SpringApplication.run(DockerSpringBootMongoDbApplication.class, args);
+        SpringApplication.run(Application.class, args);
 
     }
 
