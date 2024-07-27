@@ -20,6 +20,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RequiredArgsConstructor
@@ -69,12 +70,6 @@ public class StudentStepDefinitions {
             e.printStackTrace();
         }
     }
-//
-//    @Then("the response status should be {int}")
-//    public void theResponseStatusShouldBe(int statusCode) {
-//        ResponseEntity<String> response = testContext.getResponse();
-//        assertEquals(statusCode, response.getStatusCodeValue());
-//    }
 
     @Then("the response should contain a message {string}")
     public void theResponseShouldContainAMessage(String message) {
