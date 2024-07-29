@@ -125,10 +125,10 @@ jobs:
 
       - name: Wait for MongoDB to start
         run: |
-          for i in `seq 1 30`; do
+          for i in `seq 1 60`; do
             nc -z localhost 27017 && echo "MongoDB is up" && exit 0
             echo "Waiting for MongoDB..."
-            sleep 1
+            sleep 5
           done
           echo "MongoDB did not start in time" && exit 1
 
@@ -137,51 +137,23 @@ jobs:
 
       - name: Start Spring Boot application
         run: mvn spring-boot:run &
-#        env:
-#          SPRING_PROFILES_ACTIVE: test
+        env:
+          SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for Spring Boot to start
         run: |
-          for i in `seq 1 30`; do
+          for i in `seq 1 60`; do
             nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
             echo "Waiting for Spring Boot..."
-            sleep 1
+            sleep 5
           done
           echo "Spring Boot did not start in time" && exit 1
 
       - name: Run unit tests
         run: mvn test -e -X
 
-      - name: Start Spring Boot application
-        run: mvn spring-boot:run &
-#        env:
-#          SPRING_PROFILES_ACTIVE: test
-
-      - name: Wait for Spring Boot to start
-        run: |
-          for i in `seq 1 30`; do
-            nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
-            echo "Waiting for Spring Boot..."
-            sleep 1
-          done
-          echo "Spring Boot did not start in time" && exit 1
-
       - name: Run integration tests
         run: mvn failsafe:integration-test -e -X
-
-      - name: Start Spring Boot application
-        run: mvn spring-boot:run &
-#        env:
-#          SPRING_PROFILES_ACTIVE: test
-
-      - name: Wait for Spring Boot to start
-        run: |
-          for i in `seq 1 30`; do
-            nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
-            echo "Waiting for Spring Boot..."
-            sleep 1
-          done
-          echo "Spring Boot did not start in time" && exit 1
 
       - name: Run Cucumber tests
         run: mvn test -Dcucumber.options="--plugin pretty" -e -X
