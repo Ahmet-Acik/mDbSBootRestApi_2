@@ -33,6 +33,7 @@ jobs:
 
       - name: Run Cucumber tests
         run: mvn test -Dcucumber.options="--plugin pretty"
+
     # - name: Code quality check
     #   run: mvn sonar:sonar
     #   env:
