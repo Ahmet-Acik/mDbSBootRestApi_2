@@ -23,51 +23,13 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -e -X
 
       - name: Run unit tests
-        run: mvn test
+        run: mvn test -e -X
 
       - name: Run integration tests
-        run: mvn failsafe:integration-test
+        run: mvn failsafe:integration-test -e -X
 
       - name: Run Cucumber tests
-        run: mvn test -Dcucumber.options="--plugin pretty"
-
-    # - name: Code quality check
-    #   run: mvn sonar:sonar
-    #   env:
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    # - name: Build Docker image
-    #   run: docker build -t myapp:${{ github.sha }} .
-
-    # - name: Push Docker image
-    #   run: docker push myapp:${{ github.sha }}
-    #   env:
-    #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-    #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    # - name: Deploy to Kubernetes
-    #   run: kubectl apply -f k8s/deployment.yaml
-    #   env:
-    #     KUBECONFIG: ${{ secrets.KUBECONFIG }}
-
-    # - name: Code quality check
-    #   run: mvn sonar:sonar
-    #   env:
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    # - name: Build Docker image
-    #   run: docker build -t myapp:${{ github.sha }} .
-
-    # - name: Push Docker image
-    #   run: docker push myapp:${{ github.sha }}
-    #   env:
-    #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-    #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    # - name: Deploy to Kubernetes
-    #   run: kubectl apply -f k8s/deployment.yaml
-    #   env:
-    #     KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: mvn test -Dcucumber.options="--plugin pretty" -e -X
