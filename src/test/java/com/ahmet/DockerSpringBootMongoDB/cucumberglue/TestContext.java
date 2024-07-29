@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestContext {
 
+
     private RestTemplate restTemplate = new RestTemplate();
     private ResponseEntity<String> response;
+
+    private String studentId;
 
     public RestTemplate getRestTemplate() {
         return restTemplate;
@@ -28,4 +31,14 @@ public class TestContext {
     public void setResponse(ResponseEntity<String> response) {
         this.response = response;
     }
+
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
 }
