@@ -134,6 +134,20 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -e -X
 
+      - name: Start Spring Boot application
+        run: mvn spring-boot:run &
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Wait for Spring Boot to start
+        run: |
+          for i in `seq 1 30`; do
+            nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
+            echo "Waiting for Spring Boot..."
+            sleep 1
+          done
+          echo "Spring Boot did not start in time" && exit 1
+
       - name: Run unit tests
         run: mvn test -e -X
 
