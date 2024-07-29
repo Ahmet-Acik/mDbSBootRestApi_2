@@ -137,8 +137,8 @@ jobs:
 
       - name: Start Spring Boot application
         run: mvn spring-boot:run &
-        env:
-          SPRING_PROFILES_ACTIVE: test
+#        env:
+#          SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for Spring Boot to start
         run: |
@@ -154,8 +154,8 @@ jobs:
 
       - name: Start Spring Boot application
         run: mvn spring-boot:run &
-        env:
-          SPRING_PROFILES_ACTIVE: test
+#        env:
+#          SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for Spring Boot to start
         run: |
@@ -171,8 +171,8 @@ jobs:
 
       - name: Start Spring Boot application
         run: mvn spring-boot:run &
-        env:
-          SPRING_PROFILES_ACTIVE: test
+#        env:
+#          SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for Spring Boot to start
         run: |
