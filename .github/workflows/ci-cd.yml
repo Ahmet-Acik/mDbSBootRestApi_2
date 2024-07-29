@@ -132,6 +132,9 @@ jobs:
           done
           echo "MongoDB did not start in time" && exit 1
 
+      - name: Check MongoDB logs
+        run: docker logs $(docker ps -q --filter ancestor=mongo:latest)
+
       - name: Build with Maven
         run: mvn clean install -e -X
 
