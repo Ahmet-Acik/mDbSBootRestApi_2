@@ -1,31 +1,21 @@
 package com.ahmet.DockerSpringBootMongoDB.cucumberglue;
 
-import com.ahmet.DockerSpringBootMongoDB.collection.Address;
 import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+/**
+ * Step definitions for Cucumber tests related to updating a student.
+ */
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RequiredArgsConstructor
@@ -40,6 +30,13 @@ public class UpdateStudentStepDefs {
     @Autowired
     private StudentRepository studentRepository;
 
+    /**
+     * Sends a PUT request to update a student with the provided data.
+     *
+     * @param url       the URL to send the PUT request to
+     * @param dataTable the data table containing the student data to update
+     * @throws Exception if an error occurs during the request
+     */
     @When("I send a PUT request to {string} with the following data:")
     public void i_send_a_PUT_request_to_with_the_following_data(String url, DataTable dataTable) throws Exception {
         Student student = new Student();

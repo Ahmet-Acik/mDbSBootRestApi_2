@@ -5,17 +5,17 @@ services:
     ports:
       - 27017:27017
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: root # The root username for MongoDB
+      MONGO_INITDB_ROOT_PASSWORD: example # The root password for MongoDB
 
   springboot:
     build: .
     ports:
       - 8080:8080
     environment:
-      MONGODB_AUTH_DB: admin
-      MONGODB_DB: school
-      MONGODB_PORT: 27017
-      MONGODB_HOST: mongo
+      MONGODB_AUTH_DB: admin # The authentication database for MongoDB
+      MONGODB_DB: school # The database name for the application
+      MONGODB_PORT: 27017 # The port on which MongoDB is running
+      MONGODB_HOST: mongo # The hostname for the MongoDB service
     depends_on:
-      - mongo
+      - mongo # The springboot service depends on the mongo service

@@ -33,6 +33,10 @@ public class RestAssuredControllerStudent_IT {
 
     private String studentId;
 
+    /**
+     * Sets up the test environment before each test.
+     * Creates a sample student and extracts its ID from the response.
+     */
     @BeforeEach
     public void setup() {
         // Set base URI, port, and base path for RestAssured
@@ -69,6 +73,10 @@ public class RestAssuredControllerStudent_IT {
         }
     }
 
+    /**
+     * Cleans up the test environment after each test.
+     * Deletes the created student by ID.
+     */
     @AfterEach
     public void tearDown() {
         // Check if studentId is not null
@@ -89,6 +97,9 @@ public class RestAssuredControllerStudent_IT {
         }
     }
 
+    /**
+     * Tests creating a student and verifies that the response status is 201.
+     */
     @Test
     public void createStudent_shouldReturn201() {
         // JSON string for creating a new student
@@ -116,6 +127,9 @@ public class RestAssuredControllerStudent_IT {
         assertFalse(responseID.isEmpty(), "ID should not be empty");
     }
 
+    /**
+     * Tests deleting a student by ID and verifies that the response status is 204.
+     */
     @Test
     public void deleteStudentById_shouldReturn204() {
         // Perform a DELETE request to delete the student by ID
@@ -124,6 +138,9 @@ public class RestAssuredControllerStudent_IT {
                 .then().statusCode(204); // Assert that the status code is 204
     }
 
+    /**
+     * Tests partially updating a student and verifies that the response status is 200.
+     */
     @Test
     public void partiallyUpdateStudent_shouldReturn200() {
         // JSON string for partially updating the student's email
@@ -139,6 +156,9 @@ public class RestAssuredControllerStudent_IT {
                 .body("student.email", equalTo("updated.partial@update.com")); // Assert that the email is updated
     }
 
+    /**
+     * Tests finding a student by ID and verifies that the response status is 200.
+     */
     @Test
     public void findStudentById_shouldReturn200() {
         // Perform a GET request to find the student by ID
@@ -148,6 +168,9 @@ public class RestAssuredControllerStudent_IT {
                 .body("id", equalTo(studentId)); // Assert that the ID matches
     }
 
+    /**
+     * Tests updating a student's name and verifies that the response status is 200.
+     */
     @Test
     public void updateStudentName_shouldReturn200() {
         // Logger for logging information
@@ -172,6 +195,9 @@ public class RestAssuredControllerStudent_IT {
         assertEquals(200, statusCode, "Expected status code 200 but received: " + statusCode + ". Response body: " + responseBody);
     }
 
+    /**
+     * Tests finding all students and verifies that the response status is 200.
+     */
     @Test
     public void findAllStudents_shouldReturn200() {
         // Perform a GET request to find all students
@@ -182,6 +208,9 @@ public class RestAssuredControllerStudent_IT {
 
     // Unhappy Path Tests
 
+    /**
+     * Tests deleting a non-existent student and verifies that the response status is 404.
+     */
     @Test
     public void deleteNonExistentStudent_shouldReturn404() {
         // Perform a DELETE request to delete a non-existent student
@@ -192,6 +221,9 @@ public class RestAssuredControllerStudent_IT {
                 .body("message", notNullValue()); // Assert that the response body contains a message
     }
 
+    /**
+     * Tests updating a student with invalid data and verifies that the response status is 400.
+     */
     @Test
     public void updateStudent_withInvalidData_shouldReturn400() {
         // JSON string for updating the student with invalid data
@@ -206,6 +238,9 @@ public class RestAssuredControllerStudent_IT {
                 .body("message", notNullValue()); // Assert that the response body contains a message
     }
 
+    /**
+     * Tests creating a student with invalid data and verifies that the response status is 400.
+     */
     @Test
     public void createStudent_withInvalidData_shouldReturn400() {
         // Define test cases for invalid student data

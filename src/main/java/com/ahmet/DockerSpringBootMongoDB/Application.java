@@ -27,7 +27,6 @@ import java.util.Arrays;
 @EnableMongoRepositories(basePackages = "com.ahmet.DockerSpringBootMongoDB.repository")
 public class Application {
 
-//    private static final Logger logger = LoggerFactory.getLogger(Application.class);
     /**
      * Main method to run the Spring Boot application.
      *

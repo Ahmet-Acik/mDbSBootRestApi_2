@@ -19,6 +19,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Step definitions for Cucumber tests related to partially updating a student.
+ */
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RequiredArgsConstructor
@@ -34,6 +37,11 @@ public class PartialUpdateStudentStepDefs {
     @Autowired
     private StudentRepository studentRepository;
 
+    /**
+     * Populates the database with the given students.
+     *
+     * @param dataTable a DataTable containing student data
+     */
     @Given("the following students exist:")
     public void the_following_students_exist(DataTable dataTable) {
         dataTable.asMaps().forEach(row -> {
@@ -47,6 +55,14 @@ public class PartialUpdateStudentStepDefs {
         });
     }
 
+    /**
+     * Sends a PATCH request to the specified URL with the given data.
+     * If the student does not exist, sets the response status to 404 with a custom message.
+     *
+     * @param url the URL to send the PATCH request to
+     * @param dataTable a DataTable containing the fields to update
+     * @throws Exception if an error occurs during the request
+     */
     @When("I send a PATCH request to {string} with the following data:")
     public void i_send_a_PATCH_request_to_with_the_following_data(String url, DataTable dataTable) throws Exception {
         Student student = new Student();
@@ -96,6 +112,11 @@ public class PartialUpdateStudentStepDefs {
         }
     }
 
+    /**
+     * Asserts that the response status is as expected.
+     *
+     * @param expectedStatus the expected HTTP status code
+     */
     @Then("the response status should be {int}")
     public void the_response_status_should_be(int expectedStatus) {
         ResponseEntity<String> response = testContext.getResponse();
@@ -103,7 +124,11 @@ public class PartialUpdateStudentStepDefs {
         log.info("Response status is as expected: {}", expectedStatus);
     }
 
-
+    /**
+     * Asserts that the response contains the expected message.
+     *
+     * @param expectedMessage the expected message in the response body
+     */
     @Then("the response should contain {string}")
     public void the_response_should_contain(String expectedMessage) {
         ResponseEntity<String> response = testContext.getResponse();

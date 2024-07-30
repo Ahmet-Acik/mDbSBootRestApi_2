@@ -43,6 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.eq;
 
+/**
+ * Integration tests for the StudentController.
+ */
 @ExtendWith(MockitoExtension.class) // Use Mockito extension for JUnit 5
 @AutoConfigureMockMvc // Auto-configure MockMvc
 @SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // Spring Boot test configuration
@@ -64,6 +67,9 @@ public class ControllerStudent_IT {
     @InjectMocks
     private StudentController studentController; // Inject mocks into StudentController
 
+    /**
+     * Sets up the test environment before each test.
+     */
     @BeforeEach
     public void setUp() {
         // Arrange: Create a sample address and student for testing
@@ -87,6 +93,11 @@ public class ControllerStudent_IT {
                 .build();
     }
 
+    /**
+     * Tests the creation of a student.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testCreateStudent() throws Exception {
         // Arrange: Mock the service to return an expected response
@@ -104,6 +115,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json("{\"message\": \"A new student is successfully created with ID: Expected response string\"}"));
     }
 
+    /**
+     * Tests saving a student.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testSaveStudent() throws Exception {
         // Arrange: Mock the service to return an expected save response
@@ -121,6 +137,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json("{\"message\": \"A new student is successfully created with ID: Student saved successfully!\"}"));
     }
 
+    /**
+     * Tests retrieving a student by ID.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testAnotherEndpoint() throws Exception {
         // Arrange: Mock the service to return the sample student
@@ -135,6 +156,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(sampleStudent)));
     }
 
+    /**
+     * Tests retrieving all students.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testFindAll() throws Exception {
         // Arrange: Mock the service to return a list of students
@@ -150,6 +176,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
+    /**
+     * Tests retrieving a student by ID.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testFindById() throws Exception {
         // Arrange: Mock the service to return the sample student
@@ -163,6 +194,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(sampleStudent)));
     }
 
+    /**
+     * Tests retrieving students by name prefix.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testGetStudentStartWith() throws Exception {
         // Arrange: Mock the service to return a list of students starting with "John"
@@ -177,6 +213,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
+    /**
+     * Tests retrieving students by age range.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testGetByPersonAge() throws Exception {
         // Arrange: Mock the service to return a list of students within the age range
@@ -191,6 +232,9 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
+    /**
+     * Tests updating a student.
+     */
     @Test
     public void testUpdateStudent() {
         // Arrange: Create a new student object with updated details
@@ -210,6 +254,11 @@ public class ControllerStudent_IT {
         assertEquals(OK, response.getStatusCode());
     }
 
+    /**
+     * Tests updating a student when the student exists.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void updateStudent_whenStudentExists_updatesStudentSuccessfully() throws Exception {
         // Arrange: Mock the service to return the sample student and the updated student
@@ -231,6 +280,11 @@ public class ControllerStudent_IT {
         assertTrue(actualResponse.contains("\"message\":\"Student updated successfully with ID: 1\""));
     }
 
+    /**
+     * Tests partially updating a student.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testPartiallyUpdateStudent() throws Exception {
         // Arrange: Mock the service to return the sample student and the partially updated student
@@ -247,6 +301,11 @@ public class ControllerStudent_IT {
                 .andExpect(content().json(objectMapper.writeValueAsString(new PartialUpdateStudentResponse("Student partially updated successfully with ID: 1", sampleStudent))));
     }
 
+    /**
+     * Tests deleting a student by ID.
+     *
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testDeleteById() throws Exception {
         // Act: Perform a DELETE request to delete the student by ID
@@ -256,6 +315,9 @@ public class ControllerStudent_IT {
         response.andExpect(status().isNotFound());
     }
 
+    /**
+     * Tests updating a student with invalid data.
+     */
     @Test
     public void testUpdateStudent_withInvalidData() {
         // Arrange: Create an invalid student object
@@ -272,6 +334,9 @@ public class ControllerStudent_IT {
         assertTrue(response.getBody().toString().contains("Bad Request"));
     }
 
+    /**
+     * Tests updating a non-existent student.
+     */
     @Test
     public void testUpdateStudent_nonExistentStudent() {
         // Arrange: Create a new student object with updated details

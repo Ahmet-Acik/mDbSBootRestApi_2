@@ -3,37 +3,37 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - master # Trigger the workflow on push events to the master branch
   pull_request:
     branches:
-      - master
+      - master # Trigger the workflow on pull request events to the master branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
 
     services:
       mongo:
-        image: mongo:latest
+        image: mongo:latest # Use the latest MongoDB image
         ports:
-          - 27017:27017
+          - 27017:27017 # Map port 27017 on the host to port 27017 on the container
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Checkout the repository code
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4 # Set up Java Development Kit (JDK) version 17
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '17' # Specify the Java version
+          distribution: 'temurin' # Specify the JDK distribution
 
       - name: Set environment variables
         run: |
-          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
-          echo "MONGODB_DB=school" >> $GITHUB_ENV
-          echo "MONGODB_PORT=27017" >> $GITHUB_ENV
-          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
+          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV # Set MongoDB authentication database
+          echo "MONGODB_DB=school" >> $GITHUB_ENV # Set MongoDB database name
+          echo "MONGODB_PORT=27017" >> $GITHUB_ENV # Set MongoDB port
+          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV # Set MongoDB host
 
       - name: Wait for MongoDB to start
         run: |
@@ -42,18 +42,18 @@ jobs:
             echo "Waiting for MongoDB..."
             sleep 5
           done
-          echo "MongoDB did not start in time" && exit 1
+          echo "MongoDB did not start in time" && exit 1 # Wait for MongoDB to start, with a timeout
 
       - name: Check MongoDB logs
-        run: docker logs $(docker ps -q --filter ancestor=mongo:latest)
+        run: docker logs $(docker ps -q --filter ancestor=mongo:latest) # Check the logs of the MongoDB container
 
       - name: Build with Maven
-        run: mvn clean install -e -X
+        run: mvn clean install -e -X # Build the project using Maven
 
       - name: Start Spring Boot application
-        run: mvn spring-boot:run &
+        run: mvn spring-boot:run & # Start the Spring Boot application
         env:
-          SPRING_PROFILES_ACTIVE: test
+          SPRING_PROFILES_ACTIVE: test # Set the active Spring profile to 'test'
 
       - name: Wait for Spring Boot to start
         run: |
@@ -62,16 +62,16 @@ jobs:
             echo "Waiting for Spring Boot..."
             sleep 5
           done
-          echo "Spring Boot did not start in time" && exit 1
+          echo "Spring Boot did not start in time" && exit 1 # Wait for Spring Boot to start, with a timeout
 
       - name: Run smoke tests
-        run: mvn test -P smoke-tests -e -X
+        run: mvn test -P smoke-tests -e -X # Run smoke tests using Maven
 
       - name: Run unit tests
-        run: mvn test -e -X
+        run: mvn test -e -X # Run unit tests using Maven
 
       - name: Run integration tests
-        run: mvn failsafe:integration-test -e -X
+        run: mvn failsafe:integration-test -e -X # Run integration tests using Maven
 
       - name: Run Cucumber tests
-        run: mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X
+        run: mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X # Run Cucumber tests using Maven
