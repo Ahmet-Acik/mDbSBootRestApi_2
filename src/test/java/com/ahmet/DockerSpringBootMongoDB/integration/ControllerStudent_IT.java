@@ -43,29 +43,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.eq;
 
-@ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
-@SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ExtendWith(MockitoExtension.class) // Use Mockito extension for JUnit 5
+@AutoConfigureMockMvc // Auto-configure MockMvc
+@SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // Spring Boot test configuration
+@ActiveProfiles("test") // Use the "test" profile
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD) // Reset context after each test
 public class ControllerStudent_IT {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc; // MockMvc for performing HTTP requests in tests
 
     @MockBean
-    private StudentService studentService;
+    private StudentService studentService; // Mock the StudentService
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // ObjectMapper for JSON conversion
 
-    private Student sampleStudent;
+    private Student sampleStudent; // Sample student for testing
 
     @InjectMocks
-    private StudentController studentController;
+    private StudentController studentController; // Inject mocks into StudentController
 
     @BeforeEach
     public void setUp() {
+        // Arrange: Create a sample address and student for testing
         Address sampleAddress = Address.builder()
                 .street("123 Main St")
                 .city("Anytown")
@@ -88,150 +89,204 @@ public class ControllerStudent_IT {
 
     @Test
     public void testCreateStudent() throws Exception {
+        // Arrange: Mock the service to return an expected response
         String expectedResponse = "Expected response string";
         doReturn(expectedResponse).when(studentService).save(any(Student.class));
 
+        // Act: Convert the sample student to JSON and perform a POST request
         String studentJson = objectMapper.writeValueAsString(sampleStudent);
-
         ResultActions response = mockMvc.perform(post("/students")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(studentJson));
 
+        // Assert: Verify the response status and content
         response.andExpect(status().isCreated())
                 .andExpect(content().json("{\"message\": \"A new student is successfully created with ID: Expected response string\"}"));
     }
 
     @Test
     public void testSaveStudent() throws Exception {
+        // Arrange: Mock the service to return an expected save response
         String expectedSaveResponse = "Student saved successfully!";
         doReturn(expectedSaveResponse).when(studentService).save(any(Student.class));
-        String studentJson = objectMapper.writeValueAsString(sampleStudent);
 
-        mockMvc.perform(post("/students")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(studentJson))
-                .andExpect(status().isCreated())
+        // Act: Convert the sample student to JSON and perform a POST request
+        String studentJson = objectMapper.writeValueAsString(sampleStudent);
+        ResultActions response = mockMvc.perform(post("/students")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(studentJson));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isCreated())
                 .andExpect(content().json("{\"message\": \"A new student is successfully created with ID: Student saved successfully!\"}"));
     }
 
     @Test
     public void testAnotherEndpoint() throws Exception {
+        // Arrange: Mock the service to return the sample student
         given(studentService.findByIdOptional("1")).willReturn(Optional.of(sampleStudent));
+
+        // Act: Perform a GET request to retrieve the student by ID
         ResultActions response = mockMvc.perform(get("/students/1")
                 .contentType(MediaType.APPLICATION_JSON));
+
+        // Assert: Verify the response status and content
         response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(sampleStudent)));
     }
 
     @Test
     public void testFindAll() throws Exception {
+        // Arrange: Mock the service to return a list of students
         List<Student> students = Collections.singletonList(sampleStudent);
         ResponseEntity<List<Student>> responseEntity = new ResponseEntity<>(students, HttpStatus.OK);
         given(studentService.findAll()).willReturn(responseEntity);
-        mockMvc.perform(get("/students/all"))
-                .andExpect(status().isOk())
+
+        // Act: Perform a GET request to retrieve all students
+        ResultActions response = mockMvc.perform(get("/students/all"));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
     @Test
     public void testFindById() throws Exception {
+        // Arrange: Mock the service to return the sample student
         given(studentService.findByIdOptional("1")).willReturn(Optional.of(sampleStudent));
-        mockMvc.perform(get("/students/1"))
-                .andExpect(status().isOk())
+
+        // Act: Perform a GET request to retrieve the student by ID
+        ResultActions response = mockMvc.perform(get("/students/1"));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(sampleStudent)));
     }
 
     @Test
     public void testGetStudentStartWith() throws Exception {
+        // Arrange: Mock the service to return a list of students starting with "John"
         List<Student> students = Collections.singletonList(sampleStudent);
         given(studentService.getStudentStartWith("John")).willReturn(students);
-        mockMvc.perform(get("/students?name=John"))
-                .andExpect(status().isOk())
+
+        // Act: Perform a GET request to retrieve students by name prefix
+        ResultActions response = mockMvc.perform(get("/students?name=John"));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
     @Test
     public void testGetByPersonAge() throws Exception {
+        // Arrange: Mock the service to return a list of students within the age range
         List<Student> students = Collections.singletonList(sampleStudent);
         given(studentService.getByPersonAge(18, 22)).willReturn(students);
-        mockMvc.perform(get("/students/age?minAge=18&maxAge=22"))
-                .andExpect(status().isOk())
+
+        // Act: Perform a GET request to retrieve students by age range
+        ResultActions response = mockMvc.perform(get("/students/age?minAge=18&maxAge=22"));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(students)));
     }
 
     @Test
     public void testUpdateStudent() {
+        // Arrange: Create a new student object with updated details
         Student student = new Student();
         student.setName("Updated Student");
         student.setEmail("updated@student.com");
         student.setAge(21);
 
+        // Mock the service to return the updated student
         when(studentService.findByIdOptional(anyString())).thenReturn(Optional.of(student));
         when(studentService.updateStudent(anyString(), any(Student.class))).thenReturn(student);
 
+        // Act: Call the updateStudent method of the controller
         ResponseEntity<?> response = studentController.updateStudent("1", student);
+
+        // Assert: Verify the response status
         assertEquals(OK, response.getStatusCode());
     }
 
     @Test
     public void updateStudent_whenStudentExists_updatesStudentSuccessfully() throws Exception {
+        // Arrange: Mock the service to return the sample student and the updated student
         given(studentService.findByIdOptional("1")).willReturn(Optional.of(sampleStudent));
         given(studentService.updateStudent(eq("1"), any(Student.class))).willReturn(sampleStudent);
 
+        // Create an expected response object
         UpdateStudentResponse expectedResponse = new UpdateStudentResponse("Student updated successfully with ID: 1", sampleStudent);
         String expectedJson = objectMapper.writeValueAsString(expectedResponse);
 
+        // Act: Perform a PUT request to update the student
         String actualResponse = mockMvc.perform(put("/students/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleStudent)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        System.out.println("Actual response: " + actualResponse);
-
+        // Assert: Verify the response content
         assertTrue(actualResponse.contains("\"message\":\"Student updated successfully with ID: 1\""));
     }
 
     @Test
     public void testPartiallyUpdateStudent() throws Exception {
+        // Arrange: Mock the service to return the sample student and the partially updated student
         given(studentService.findByIdOptional("1")).willReturn(Optional.of(sampleStudent));
         given(studentService.partiallyUpdateStudent(eq("1"), any(Student.class))).willReturn(sampleStudent);
 
-        mockMvc.perform(patch("/students/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sampleStudent)))
-                .andExpect(status().isOk())
+        // Act: Perform a PATCH request to partially update the student
+        ResultActions response = mockMvc.perform(patch("/students/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(sampleStudent)));
+
+        // Assert: Verify the response status and content
+        response.andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(new PartialUpdateStudentResponse("Student partially updated successfully with ID: 1", sampleStudent))));
     }
 
     @Test
     public void testDeleteById() throws Exception {
-        mockMvc.perform(delete("/students/1"))
-                .andExpect(status().isNotFound());
+        // Act: Perform a DELETE request to delete the student by ID
+        ResultActions response = mockMvc.perform(delete("/students/1"));
+
+        // Assert: Verify the response status
+        response.andExpect(status().isNotFound());
     }
 
     @Test
     public void testUpdateStudent_withInvalidData() {
+        // Arrange: Create an invalid student object
         Student invalidStudent = new Student();
         invalidStudent.setName(""); // Invalid name
         invalidStudent.setEmail("invalid-email"); // Invalid email
         invalidStudent.setAge(-1); // Invalid age
 
+        // Act: Call the updateStudent method of the controller with invalid data
         ResponseEntity<?> response = studentController.updateStudent("1", invalidStudent);
+
+        // Assert: Verify the response status and content
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertTrue(response.getBody().toString().contains("Bad Request"));
     }
 
     @Test
     public void testUpdateStudent_nonExistentStudent() {
+        // Arrange: Create a new student object with updated details
         Student student = new Student();
         student.setName("Updated Student");
         student.setEmail("updated@student.com");
         student.setAge(21);
 
+        // Mock the service to return an empty optional
         when(studentService.findByIdOptional(anyString())).thenReturn(Optional.empty());
 
+        // Act: Call the updateStudent method of the controller
         ResponseEntity<?> response = studentController.updateStudent("1", student);
+
+        // Assert: Verify the response status and content
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertTrue(response.getBody().toString().contains("Student not found"));
     }

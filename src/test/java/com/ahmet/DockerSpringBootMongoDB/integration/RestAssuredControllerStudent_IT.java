@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Integration tests for Student Controller using RestAssured.
  */
-//@Disabled
 @SpringBootTest(classes = {Application.class, TestConfig.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,11 +35,15 @@ public class RestAssuredControllerStudent_IT {
 
     @BeforeEach
     public void setup() {
+        // Set base URI, port, and base path for RestAssured
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8080;
         RestAssured.basePath = "/students";
 
+        // JSON string for creating a sample student
         String studentJson = "{\"name\":\"Sample Student\",\"email\":\"sample@student.com\",\"age\":20,\"address\":{\"street\":\"123 Main St\",\"city\":\"Sample City\",\"postcode\":12345},\"courses\":[\"Math\",\"Science\"],\"fullTime\":true,\"gpa\":3.5,\"graduationDate\":\"2024-05-13T00:00:00\",\"registerDate\":\"2023-10-01T00:00:00\"}";
+
+        // Perform a POST request to create a new student
         Response response = given().contentType(ContentType.JSON)
                 .body(studentJson)
                 .when().post()
@@ -48,6 +51,7 @@ public class RestAssuredControllerStudent_IT {
                 .log().all() // Log the response for debugging
                 .extract().response();
 
+        // Check if the response status code is 201 and content type is JSON
         if (response.statusCode() == 201 && response.getContentType().contains("application/json")) {
             String responseMessage = response.path("message");
             // Use a regular expression to extract the ID from the message
@@ -67,13 +71,16 @@ public class RestAssuredControllerStudent_IT {
 
     @AfterEach
     public void tearDown() {
+        // Check if studentId is not null
         if (studentId != null) {
+            // Perform a DELETE request to delete the student by ID
             Response deleteResponse = given().pathParam("id", studentId)
                     .when().delete("/{id}")
                     .then()
                     .log().all() // Log the request and response for debugging
                     .extract().response();
 
+            // Check if the response status code is not 204
             if (deleteResponse.statusCode() != 204) {
                 System.out.println("Failed to delete student with ID: " + studentId + ". Status code: " + deleteResponse.statusCode());
             }
@@ -84,20 +91,26 @@ public class RestAssuredControllerStudent_IT {
 
     @Test
     public void createStudent_shouldReturn201() {
+        // JSON string for creating a new student
         String studentJson = "{\"name\":\"Created Student\",\"email\":\"Created@student.com\",\"age\":20}";
+
+        // Perform a POST request to create a new student
         Response response = given().contentType(ContentType.JSON)
                 .body(studentJson)
                 .when().post()
-                .then().statusCode(201)
-                .body("message", containsString("ID:"))
-                .log().all()
+                .then().statusCode(201) // Assert that the status code is 201
+                .body("message", containsString("ID:")) // Assert that the response body contains "ID:"
+                .log().all() // Log the response for debugging
                 .extract().response();
 
+        // Extract the message from the response
         String responseMessage = response.path("message");
+        // Use a regular expression to extract the ID from the message
         Pattern pattern = Pattern.compile("ID: ([a-f0-9\\-]+)");
         Matcher matcher = pattern.matcher(responseMessage);
         assertTrue(matcher.find(), "ID should be present in the response message");
 
+        // Extract the ID from the matcher
         String responseID = matcher.group(1);
         assertNotNull(responseID, "ID should not be null");
         assertFalse(responseID.isEmpty(), "ID should not be empty");
@@ -105,200 +118,125 @@ public class RestAssuredControllerStudent_IT {
 
     @Test
     public void deleteStudentById_shouldReturn204() {
+        // Perform a DELETE request to delete the student by ID
         given().pathParam("id", studentId)
                 .when().delete("/{id}")
-                .then().statusCode(204);
+                .then().statusCode(204); // Assert that the status code is 204
     }
 
     @Test
     public void partiallyUpdateStudent_shouldReturn200() {
+        // JSON string for partially updating the student's email
         String partialUpdateJson = "{\"email\":\"updated.partial@update.com\"}";
+
+        // Perform a PATCH request to partially update the student
         given().contentType(ContentType.JSON)
                 .body(partialUpdateJson)
                 .pathParam("id", studentId)
                 .when().patch("/{id}")
-                .then().log().all()
-                .statusCode(200)
-                .body("student.email", equalTo("updated.partial@update.com"));
+                .then().log().all() // Log the response for debugging
+                .statusCode(200) // Assert that the status code is 200
+                .body("student.email", equalTo("updated.partial@update.com")); // Assert that the email is updated
     }
 
     @Test
     public void findStudentById_shouldReturn200() {
+        // Perform a GET request to find the student by ID
         given().pathParam("id", studentId)
                 .when().get("/{id}")
-                .then().statusCode(200)
-                .body("id", equalTo(studentId));
+                .then().statusCode(200) // Assert that the status code is 200
+                .body("id", equalTo(studentId)); // Assert that the ID matches
     }
 
     @Test
     public void updateStudentName_shouldReturn200() {
+        // Logger for logging information
         Logger logger = LoggerFactory.getLogger(this.getClass());
+
+        // JSON string for updating the student's name
         String updatedStudentJson = "{\"id\":\"" + studentId + "\", \"name\":\"Updated Name Only\", \"email\":\"sample@student.com\", \"age\":20,\"address\":{\"street\":\"123 Main St\",\"city\":\"Sample City\",\"postcode\":12345},\"courses\":[\"Math\",\"Science\"],\"fullTime\":true,\"gpa\":3.5,\"graduationDate\":\"2024-05-13T00:00:00\",\"registerDate\":\"2023-10-01T00:00:00\"}";
         logger.info("Executing updateStudentName_shouldReturn200 with studentId: {} and payload: {}", studentId, updatedStudentJson);
 
+        // Perform a PUT request to update the student's name
         Response response = given().contentType(ContentType.JSON)
                 .body(updatedStudentJson)
                 .when()
                 .put("/{id}", studentId);
 
+        // Extract the status code and response body
         int statusCode = response.getStatusCode();
         String responseBody = response.getBody().asString();
         logger.info("Received status code: {} for updateStudentName_shouldReturn200 with studentId: {}. Response body: {}", statusCode, studentId, responseBody);
+
+        // Assert that the status code is 200
         assertEquals(200, statusCode, "Expected status code 200 but received: " + statusCode + ". Response body: " + responseBody);
     }
 
     @Test
     public void findAllStudents_shouldReturn200() {
+        // Perform a GET request to find all students
         when().get("/all")
-                .then().statusCode(200)
-                .body("$", hasSize(greaterThan(0)));
+                .then().statusCode(200) // Assert that the status code is 200
+                .body("$", hasSize(greaterThan(0))); // Assert that the response body has a size greater than 0
     }
 
     // Unhappy Path Tests
 
     @Test
     public void deleteNonExistentStudent_shouldReturn404() {
+        // Perform a DELETE request to delete a non-existent student
         given().contentType(ContentType.JSON)
                 .when()
                 .delete("/nonexistentId")
-                .then().statusCode(404)
-                .body("message", notNullValue());
+                .then().statusCode(404) // Assert that the status code is 404
+                .body("message", notNullValue()); // Assert that the response body contains a message
     }
 
     @Test
     public void updateStudent_withInvalidData_shouldReturn400() {
+        // JSON string for updating the student with invalid data
         String invalidUpdatedStudentJson = "{\"id\":\"" + studentId + "\", \"name\":\"\", \"email\":\"invalidemail\", \"age\":-1}";
+
+        // Perform a PUT request to update the student with invalid data
         given().contentType(ContentType.JSON)
                 .body(invalidUpdatedStudentJson)
                 .when()
                 .put("/" + studentId)
-                .then().statusCode(400)
-                .body("message", notNullValue());
+                .then().statusCode(400) // Assert that the status code is 400
+                .body("message", notNullValue()); // Assert that the response body contains a message
     }
 
     @Test
     public void createStudent_withInvalidData_shouldReturn400() {
+        // Define test cases for invalid student data
         String[][] testCases = {
                 {"", "20", "john@example.com", "Missing required field: Name is required"},
                 {"John", "-1", "john@example.com", "Missing required field: Age must be a positive number"},
                 {"John", "20", "invalid-email", "Missing required field: Email is not valid"}
         };
 
+        // Iterate over each test case
         for (String[] testCase : testCases) {
             String name = testCase[0];
             String age = testCase[1];
             String email = testCase[2];
             String expectedErrorMessage = testCase[3];
 
+            // Arrange: Create a JSON string for the invalid student
             String invalidStudentJson = String.format("{\"name\":\"%s\", \"age\":%s, \"email\":\"%s\"}", name, age, email);
             logger.info("Executing createStudent_withInvalidData_shouldReturn400 with payload: {}", invalidStudentJson);
 
+            // Act: Perform a POST request to create a new student with invalid data
             Response response = given().contentType(ContentType.JSON)
                     .body(invalidStudentJson)
                     .when()
                     .post()
-                    .then().log().all()
-                    .statusCode(400)
-                    .body("message", equalTo(expectedErrorMessage))
+                    .then().log().all() // Log the response for debugging
+                    .statusCode(400) // Assert: Verify the response status code is 400 (Bad Request)
+                    .body("message", equalTo(expectedErrorMessage)) // Assert: Verify the response body contains the expected error message
                     .extract().response();
 
             logger.info("Received response: {}", response.asString());
         }
     }
-    /*
-    ### Plan
-
-1. **Log Request and Response**: Add logging to capture the request and response details for each test.
-2. **Verify Status Code and Response Body**: Ensure the status code and response body are correctly verified.
-
-### Updated Test Class
-
-```java
-package com.ahmet.DockerSpringBootMongoDB.controller;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.equalTo;
-
-public class RestAssuredControllerStudentTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(RestAssuredControllerStudentTest.class); // create private static logger
-
-    @Test
-    public void createStudent_withInvalidData_shouldReturn400() {
-        String invalidStudentJson = "{\"name\":\"\", \"email\":\"invalidemail\", \"age\":-1}";
-        logger.info("Executing createStudent_withInvalidData_shouldReturn400 with payload: {}", invalidStudentJson);   // add logger.info (“Executing ……with payload:{}” invalidSudentJson) for request.
-
-        Response response = given().contentType(ContentType.JSON)
-                .body(invalidStudentJson)
-                .when()
-                .post("/")
-                .then().log().all()
-                .statusCode(400)
-                .body("message", notNullValue())
-                .extract().response();
-
-        logger.info("Received response: {}", response.asString()); add logger.info("Received response: {}", response.asString()); for response
-    }
-
-    @Test
-    public void partiallyUpdateStudent_withInvalidData_shouldReturn400() {
-        String invalidPartialUpdateJson = "{\"email\":\"invalidemail\"}";
-        logger.info("Executing partiallyUpdateStudent_withInvalidData_shouldReturn400 with payload: {}", invalidPartialUpdateJson);
-
-        Response response = given().contentType(ContentType.JSON)
-                .body(invalidPartialUpdateJson)
-                .when()
-                .patch("/" + studentId)
-                .then().log().all()
-                .statusCode(400)
-                .body("message", notNullValue())
-                .extract().response();
-
-        logger.info("Received response: {}", response.asString());
-    }
-
-    @Test
-    public void findNonExistentStudentById_shouldReturn404() {
-        logger.info("Executing findNonExistentStudentById_shouldReturn404 with non-existent ID");
-
-        Response response = given().pathParam("id", "non-existent-id")
-                .when()
-                .get("/{id}")
-                .then().log().all()
-                .statusCode(404)
-                .body("message", equalTo("Student not found"))
-                .extract().response();
-
-        logger.info("Received response: {}", response.asString());
-    }
-}
-```
-
-Plan
-Analyze the Test Failures: Identify the root cause of each test failure.
-Fix the Issues: Update the tests and possibly the controller to ensure the correct status codes and responses are returned.
-
-Analysis and Fixes
-Test createStudent_withInvalidData_shouldReturn400:
-Issue: Expected status code 400 but received 404.
-Fix: Ensure the controller returns a 400 status code for invalid data.
-
-Test findNonExistentStudentById_shouldReturn404:
-Issue: No content-type was defined in the response.
-Fix: Ensure the controller sets the content-type for 404 responses.
-
-Test partiallyUpdateStudent_withInvalidData_shouldReturn400:
-Issue: Expected status code 400 but received 200.
-Fix: Ensure the controller returns a 400 status code for invalid data during partial updates.
-     */
 }
