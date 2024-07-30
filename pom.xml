@@ -335,6 +335,7 @@
                             <configuration>
                                 <includes>
                                     <include>**/integration/*IT.java</include>
+                                    <include>**/CucumberTestRunner.java</include>
                                 </includes>
                             </configuration>
                         </execution>
