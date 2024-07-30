@@ -17,19 +17,27 @@ pipeline {
 
         stage('Set up JDK 17') {
             steps {
-                script {
-                    def javaHome = tool name: 'JDK 17', type: 'jdk'
-                    env.JAVA_HOME = javaHome
-                    env.PATH = "${javaHome}/bin:${env.PATH}"
-                }
+                tool name: 'JDK 17', type: 'jdk'
+                env.JAVA_HOME = "${tool 'JDK 17'}"
+                env.PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
             }
         }
 
-        stage('Start MongoDB') {
+        stage('Wait for MongoDB to start') {
             steps {
                 script {
-                    docker.image('mongo:latest').withRun('-p 27017:27017') { c ->
-                        sh 'for i in `seq 1 60`; do nc -z localhost 27017 && echo "MongoDB is up" && exit 0; echo "Waiting for MongoDB..."; sleep 5; done; echo "MongoDB did not start in time" && exit 1'
+                    def mongoStarted = false
+                    for (int i = 0; i < 60; i++) {
+                        if (sh(script: 'nc -z localhost 27017', returnStatus: true) == 0) {
+                            mongoStarted = true
+                            echo 'MongoDB is up'
+                            break
+                        }
+                        echo 'Waiting for MongoDB...'
+                        sleep 5
+                    }
+                    if (!mongoStarted) {
+                        error 'MongoDB did not start in time'
                     }
                 }
             }
@@ -51,8 +59,26 @@ pipeline {
             steps {
                 sh 'mvn spring-boot:run &'
                 script {
-                    sh 'for i in `seq 1 60`; do nc -z localhost 8080 && echo "Spring Boot is up" && exit 0; echo "Waiting for Spring Boot..."; sleep 5; done; echo "Spring Boot did not start in time" && exit 1'
+                    def springBootStarted = false
+                    for (int i = 0; i < 60; i++) {
+                        if (sh(script: 'nc -z localhost 8080', returnStatus: true) == 0) {
+                            springBootStarted = true
+                            echo 'Spring Boot is up'
+                            break
+                        }
+                        echo 'Waiting for Spring Boot...'
+                        sleep 5
+                    }
+                    if (!springBootStarted) {
+                        error 'Spring Boot did not start in time'
+                    }
                 }
+            }
+        }
+
+        stage('Run smoke tests') {
+            steps {
+                sh 'mvn test -P smoke-tests -e -X'
             }
         }
 
@@ -70,7 +96,7 @@ pipeline {
 
         stage('Run Cucumber tests') {
             steps {
-                sh 'mvn test -Dcucumber.options="--plugin pretty" -e -X'
+                sh 'mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X'
             }
         }
     }
