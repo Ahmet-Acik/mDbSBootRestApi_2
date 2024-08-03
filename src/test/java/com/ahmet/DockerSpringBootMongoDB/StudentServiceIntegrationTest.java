@@ -29,4 +29,5 @@ public class StudentServiceIntegrationTest {
         // Assert: Verify the response status is OK
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
 }
