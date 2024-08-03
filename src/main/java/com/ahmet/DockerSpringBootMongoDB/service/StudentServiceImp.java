@@ -4,6 +4,8 @@ import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.exception.MissingFieldException;
 import com.ahmet.DockerSpringBootMongoDB.exception.ResourceNotFoundException;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
+import com.github.javafaker.Faker;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -16,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class StudentServiceImp implements StudentService {
@@ -28,6 +27,46 @@ public class StudentServiceImp implements StudentService {
     private StudentRepository studentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImp.class);
+
+    @PostConstruct
+    public void initializeStudents() {
+        long count = studentRepository.count();
+        System.out.println("Number of students in the database: " + count);
+
+        if (count < 5500) {
+            createStudents((int) (5500 - count)); // Create the difference to reach 5500 students
+        }
+
+        count = studentRepository.count();
+        System.out.println("Number of students after initialization: " + count);
+    }
+
+    @Override
+    public void createStudents(int count) {
+        List<Student> students = generateStudents(count);
+        studentRepository.saveAll(students);
+    }
+
+    private List<Student> generateStudents(int count) {
+        List<Student> students = new ArrayList<>();
+        Faker faker = new Faker();
+        for (int i = 0; i < count; i++) {
+            Student student = new Student(
+                    faker.name().fullName(),
+                    faker.internet().emailAddress(),
+                    faker.number().numberBetween(18, 30),
+                    faker.bool().bool(),
+                    faker.number().randomDouble(2, 2, 4)
+            );
+            students.add(student);
+        }
+        return students;
+    }
+
+    @Override
+    public void deleteAllStudents() {
+        studentRepository.deleteAll();
+    }
 
     @Override
     public String save(Student student) {

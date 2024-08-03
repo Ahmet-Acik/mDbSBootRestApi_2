@@ -104,4 +104,14 @@ public class Student {
         this.graduationDate = graduationDate;
         this.registerDate = registerDate;
     }
+
+    public Student(String name, String email, Integer age, Boolean fullTime, Double gpa) {
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this.fullTime = fullTime;
+        this.gpa = gpa;
+    }
+
+
 }
