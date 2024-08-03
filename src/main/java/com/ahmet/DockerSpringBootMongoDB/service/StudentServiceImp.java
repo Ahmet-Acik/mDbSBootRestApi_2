@@ -4,6 +4,7 @@ import com.ahmet.DockerSpringBootMongoDB.collection.Student;
 import com.ahmet.DockerSpringBootMongoDB.exception.MissingFieldException;
 import com.ahmet.DockerSpringBootMongoDB.exception.ResourceNotFoundException;
 import com.ahmet.DockerSpringBootMongoDB.repository.StudentRepository;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -13,13 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import com.github.javafaker.Faker;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class StudentServiceImp implements StudentService {
@@ -28,6 +26,49 @@ public class StudentServiceImp implements StudentService {
     private StudentRepository studentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImp.class);
+
+    @PostConstruct
+    public void initializeStudents() {
+        long count = studentRepository.count();
+        System.out.println("Number of students in the database: " + count);
+
+        if (count < 5500) {
+            createStudents((int)(5500 -count));
+        }
+
+        count = studentRepository.count();
+        System.out.println("Number of students after initialization: " + count);
+    }
+
+    @Override
+    public void createStudents(int count) {
+        List<Student> students = generateStudents(count);
+        studentRepository.saveAll(students);
+    }
+
+    @Override
+    public void deleteAllStudents() {
+        studentRepository.deleteAll();
+    }
+
+    private List<Student> generateStudents(int count) {
+        Faker faker = new Faker();
+        List<Student> students = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            String name = firstName + " " + lastName + String.format("%04d", i);
+            String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + i + "@example.com";
+            int age = 20 + (i % 10);
+            boolean isActive = i % 2 == 0;
+            double gpa = 2.0 + (i % 3);
+
+            Student student = new Student(name, email, age, isActive, gpa);
+            students.add(student);
+        }
+        return students;
+    }
 
     @Override
     public String save(Student student) {
