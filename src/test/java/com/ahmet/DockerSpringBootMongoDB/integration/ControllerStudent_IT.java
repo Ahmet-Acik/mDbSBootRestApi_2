@@ -334,6 +334,7 @@ public class ControllerStudent_IT {
         assertTrue(response.getBody().toString().contains("Bad Request"));
     }
 
+
     /**
      * Tests updating a non-existent student.
      */
