@@ -283,31 +283,65 @@ jobs:
       - name: Install JMeter
         run: sudo apt-get install -y jmeter
 
-      - name: Run JMeter Tests
+      - name: Run JMeter Tests for GET
         uses: QAInsights/PerfAction@v3.1
         with:
           test-plan-path: src/test/resources/performance/get-api-performance-test-plan.jmx
-          args: ''
-      - name: Run JMeter Tests
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
+      - name: Run JMeter Tests for POST
         uses: QAInsights/PerfAction@v3.1
         with:
           test-plan-path: src/test/resources/performance/post-api-performance-test-plan.jmx
-          args: ''
-      - name: Run JMeter Tests
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
+      - name: Run JMeter Tests for PUT
         uses: QAInsights/PerfAction@v3.1
         with:
           test-plan-path: src/test/resources/performance/put-api-performance-test-plan.jmx
-          args: ''
-      - name: Run JMeter Tests
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
+      - name: Run JMeter Tests for PATCH
         uses: QAInsights/PerfAction@v3.1
         with:
           test-plan-path: src/test/resources/performance/patch-api-performance-test-plan.jmx
-          args: ''
-      - name: Run JMeter Tests
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
+      - name: Run JMeter Tests for DELETE
         uses: QAInsights/PerfAction@v3.1
         with:
           test-plan-path: src/test/resources/performance/delete-api-performance-test-plan.jmx
-          args: ''
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
 
       - name: Verify JMeter Results
         run: |
@@ -332,67 +366,32 @@ jobs:
             exit 1
           fi
 
-      - name: Upload Results
+      - name: Upload Results for GET
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-get
           path: results-get.jtl
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
 
-      - name: Upload Results
+      - name: Upload Results for POST
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-post
           path: results-post.jtl
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
 
-      - name: Upload Results
+      - name: Upload Results for PUT
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-put
           path: results-put.jtl
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
 
-      - name: Upload Results
+      - name: Upload Results for PATCH
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-patch
           path: results-patch.jtl
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
 
-      - name: Upload Results
+      - name: Upload Results for DELETE
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-delete
           path: results-delete.jtl
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
