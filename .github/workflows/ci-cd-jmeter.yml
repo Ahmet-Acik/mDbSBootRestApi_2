@@ -73,6 +73,17 @@ jobs:
           done
           echo "MongoDB did not start in time" && exit 1
 
+      - name: List Java Directory Contents
+        run: ls -la /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin
+
+      - name: Print Environment Variables
+        run: |
+          echo "JAVA_HOME: $JAVA_HOME"
+          echo "JAVA_HOME_17_X64: $JAVA_HOME_17_X64"
+
+      - name: Check Java Version
+        run: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java -version
+
       - name: Run JMeter Tests for GET
         uses: QAInsights/PerfAction@v3.1
         with:
