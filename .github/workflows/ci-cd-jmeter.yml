@@ -50,33 +50,39 @@ jobs:
       - name: Check Java Version
         run: docker exec jmeter-container java -version
 
+      - name: Verify JMeter Test Plan Path
+        run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
+
+      - name: Check JMeter Version
+        run: docker exec jmeter-container jmeter -v
+
       - name: Run JMeter Tests for GET
         run: |
-          docker exec jmeter-container jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Run JMeter Tests for POST
         run: |
-          docker exec jmeter-container jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
+          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Run JMeter Tests for PUT
         run: |
-          docker exec jmeter-container jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
+          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Run JMeter Tests for PATCH
         run: |
-          docker exec jmeter-container jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
+          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Run JMeter Tests for DELETE
         run: |
-          docker exec jmeter-container jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
+          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
