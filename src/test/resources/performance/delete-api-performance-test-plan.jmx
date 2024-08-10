@@ -51,6 +51,8 @@
             </ResponseAssertion>
             <!-- Duration Assertion: Ensure the response time is within acceptable limits -->
             <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
+              <stringProp name="DurationAssertion.duration">1000</stringProp>
+            </DurationAssertion>
             <!-- XPath Assertion: Ensure the response contains expected XML elements -->
             <XPathAssertion guiclass="XPathAssertionGui" testclass="XPathAssertion" testname="XPath Assertion" enabled="true">
               <stringProp name="XPath.xpath">/response/element</stringProp>
@@ -64,16 +66,14 @@
               <stringProp name="EXPECTED_VALUE">expected value</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
             </JSONPathAssertion>
+            <!-- Size Assertion: Ensure the response size is within expected limits -->
+            <SizeAssertion guiclass="SizeAssertionGui" testclass="SizeAssertion" testname="Size Assertion" enabled="true">
+              <stringProp name="SizeAssertion.size">1024</stringProp>
+              <intProp name="SizeAssertion.operator">1</intProp>
+            </SizeAssertion>
           </hashTree>
         </hashTree>
       </hashTree>
     </TestPlan>
   </hashTree>
 </jmeterTestPlan>
-```              <stringProp name="DurationAssertion.duration">1000</stringProp>
-            </DurationAssertion>
-            <!-- Size Assertion: Ensure the response size is within expected limits -->
-            <SizeAssertion guiclass="SizeAssertionGui" testclass="SizeAssertion" testname="Size Assertion" enabled="true">
-              <stringProp name="SizeAssertion.size">1024</stringProp>
-              <intProp name="SizeAssertion.operator">1</intProp>
-            </SizeAssertion>
