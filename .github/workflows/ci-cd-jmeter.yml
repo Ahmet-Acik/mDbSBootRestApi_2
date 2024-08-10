@@ -34,11 +34,26 @@ jobs:
       - name: Verify Java Installation
         run: |
           if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
-            echo "Java installation not found! Installing manually..."
-            sudo apt-get update
-            sudo apt-get install -y openjdk-17-jdk
-            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-            echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+            echo "Java installation not found!"
+            exit 1
+          fi
+        shell: /usr/bin/bash -e {0}
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+
+      - name: Verify toolchains.xml
+        run: |
+          if [ ! -f /home/runner/.m2/toolchains.xml ]; then
+            echo "toolchains.xml not found!"
+            exit 1
+          fi
+
+      - name: Verify settings.xml
+        run: |
+          if [ ! -f /home/runner/.m2/settings.xml ]; then
+            echo "settings.xml not found!"
+            exit 1
           fi
 
       - name: Set environment variables
@@ -134,7 +149,6 @@ jobs:
           if [ ! -f results-delete.jtl ]; then
             echo "JMeter results file for DELETE not found!"
             exit 1
-          fi
 
       - name: Upload Results for GET
         uses: actions/upload-artifact@v2
