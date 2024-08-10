@@ -76,6 +76,132 @@
 #      - name: Run Cucumber tests
 #        run: mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X # Run Cucumber tests using Maven
 
+#name: CI/CD Pipeline
+#
+#on:
+#  push:
+#    branches:
+#      - master
+#  pull_request:
+#    branches:
+#      - master
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    services:
+#      mongo:
+#        image: mongo:latest
+#        ports:
+#          - 27017:27017
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '17'
+#          distribution: 'temurin'
+#
+#      - name: Set environment variables
+#        run: |
+#          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
+#          echo "MONGODB_DB=school" >> $GITHUB_ENV
+#          echo "MONGODB_PORT=27017" >> $GITHUB_ENV
+#          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
+#
+#      - name: Wait for MongoDB to start
+#        run: |
+#          for i in `seq 1 60`; do
+#            nc -z localhost 27017 && echo "MongoDB is up" && exit 0
+#            echo "Waiting for MongoDB..."
+#            sleep 5
+#          done
+#          echo "MongoDB did not start in time" && exit 1
+#
+#      - name: Check MongoDB logs
+#        run: docker logs $(docker ps -q --filter ancestor=mongo:latest)
+#
+#      - name: Build with Maven
+#        run: mvn clean install -e -X
+#
+#      - name: Start Spring Boot application
+#        run: mvn spring-boot:run &
+#        env:
+#          SPRING_PROFILES_ACTIVE: test
+#
+#      - name: Wait for Spring Boot to start
+#        run: |
+#          for i in `seq 1 60`; do
+#            nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
+#            echo "Waiting for Spring Boot..."
+#            sleep 5
+#          done
+#          echo "Spring Boot did not start in time" && exit 1
+#
+#      - name: Run smoke tests
+#        run: mvn test -P smoke-tests -e -X
+#
+#      - name: Run unit tests
+#        run: mvn test -e -X
+#
+#      - name: Run integration tests
+#        run: mvn failsafe:integration-test -e -X
+#
+#      - name: Run Cucumber tests
+#        run: mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X
+#
+#      - name: Install JMeter
+#        run: sudo apt-get install -y jmeter
+#
+#      - name: Copy JMeter properties
+#        run: |
+#          JMETER_HOME=$(dirname $(dirname $(which jmeter)))
+#          sudo cp src/test/resources/jmeter.properties $JMETER_HOME/bin/jmeter.properties
+#        shell: /usr/bin/bash -e {0}
+#        env:
+#          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          MONGODB_AUTH_DB: admin
+#          MONGODB_DB: school
+#          MONGODB_PORT: 27017
+#          MONGODB_HOST: localhost
+#
+#      - name: Run JMeter performance tests
+#        run: |
+#          jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+#          jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
+#          jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
+#          jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
+#          jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
+#        shell: /usr/bin/bash -e {0}
+#        env:
+#          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          MONGODB_AUTH_DB: admin
+#          MONGODB_DB: school
+#          MONGODB_PORT: 27017
+#          MONGODB_HOST: localhost
+#
+#      - name: Generate JMeter reports
+#        run: |
+#          jmeter -g results-get.jtl -o report-get
+#          jmeter -g results-post.jtl -o report-post
+#          jmeter -g results-put.jtl -o report-put
+#          jmeter -g results-patch.jtl -o report-patch
+#          jmeter -g results-delete.jtl -o report-delete
+#        shell: /usr/bin/bash -e {0}
+#        env:
+#          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+#          MONGODB_AUTH_DB: admin
+#          MONGODB_DB: school
+#          MONGODB_PORT: 27017
+#          MONGODB_HOST: localhost
+
 name: CI/CD Pipeline
 
 on:
@@ -98,7 +224,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -157,47 +283,90 @@ jobs:
       - name: Install JMeter
         run: sudo apt-get install -y jmeter
 
-      - name: Copy JMeter properties
-        run: |
-          JMETER_HOME=$(dirname $(dirname $(which jmeter)))
-          sudo cp src/test/resources/jmeter.properties $JMETER_HOME/bin/jmeter.properties
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+      - name: Run JMeter Tests
+        uses: QAInsights/PerfAction@v3.1
+        with:
+          test-plan-path: src/test/resources/performance/get-api-performance-test-plan.jmx
+          args: ''
+      - name: Run JMeter Tests
+        uses: QAInsights/PerfAction@v3.1
+        with:
+          test-plan-path: src/test/resources/performance/post-api-performance-test-plan.jmx
+          args: ''
+      - name: Run JMeter Tests
+        uses: QAInsights/PerfAction@v3.1
+        with:
+          test-plan-path: src/test/resources/performance/put-api-performance-test-plan.jmx
+          args: ''
+      - name: Run JMeter Tests
+        uses: QAInsights/PerfAction@v3.1
+        with:
+          test-plan-path: src/test/resources/performance/patch-api-performance-test-plan.jmx
+          args: ''
+      - name: Run JMeter Tests
+        uses: QAInsights/PerfAction@v3.1
+        with:
+          test-plan-path: src/test/resources/performance/delete-api-performance-test-plan.jmx
+          args: ''
 
-      - name: Run JMeter performance tests
-        run: |
-          jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
-          jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
-          jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
-          jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
-          jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+      - name: Upload Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: jmeter-results-get
+          path: results-get.jtl
+      - name: Upload Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: jmeter-results-post
+          path: results-post.jtl
+      - name: Upload Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: jmeter-results-put
+          path: results-put.jtl
+      - name: Upload Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: jmeter-results-patch
+          path: results-patch.jtl
+      - name: Upload Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: jmeter-results-delete
+          path: results-delete.jtl
 
-      - name: Generate JMeter reports
-        run: |
-          jmeter -g results-get.jtl -o report-get
-          jmeter -g results-post.jtl -o report-post
-          jmeter -g results-put.jtl -o report-put
-          jmeter -g results-patch.jtl -o report-patch
-          jmeter -g results-delete.jtl -o report-delete
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+      - name: Analyze Results with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-get.jtl
+          label: Get API Performance Test
+          format: jmeter
+      - name: Analyze Results with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-post.jtl
+          label: Post API Performance Test
+          format: jmeter
+      - name: Analyze Results with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-put.jtl
+          label: Put API Performance Test
+          format: jmeter
+      - name: Analyze Results with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-patch.jtl
+          label: Patch API Performance Test
+          format: jmeter
+      - name: Analyze Results with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-delete.jtl
+          label: Delete API Performance Test
+          format: jmeter
