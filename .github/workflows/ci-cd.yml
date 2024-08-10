@@ -232,6 +232,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Verify Java Installation
+        run: |
+          if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
+            echo "Java installation not found!"
+            exit 1
+          fi
+
       - name: Set environment variables
         run: |
           echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
@@ -282,6 +289,19 @@ jobs:
 
       - name: Install JMeter
         run: sudo apt-get install -y jmeter
+
+      - name: Install JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Verify Java Installation
+        run: |
+          if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
+            echo "Java installation not found!"
+            exit 1
+          fi
 
       - name: Run JMeter Tests for GET
         uses: QAInsights/PerfAction@v3.1
