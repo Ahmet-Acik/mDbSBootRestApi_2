@@ -309,64 +309,90 @@ jobs:
           test-plan-path: src/test/resources/performance/delete-api-performance-test-plan.jmx
           args: ''
 
+      - name: Verify JMeter Results
+        run: |
+          if [ ! -f results-get.jtl ]; then
+            echo "JMeter results file for GET not found!"
+            exit 1
+          fi
+          if [ ! -f results-post.jtl ]; then
+            echo "JMeter results file for POST not found!"
+            exit 1
+          fi
+          if [ ! -f results-put.jtl ]; then
+            echo "JMeter results file for PUT not found!"
+            exit 1
+          fi
+          if [ ! -f results-patch.jtl ]; then
+            echo "JMeter results file for PATCH not found!"
+            exit 1
+          fi
+          if [ ! -f results-delete.jtl ]; then
+            echo "JMeter results file for DELETE not found!"
+            exit 1
+          fi
+
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-get
           path: results-get.jtl
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-post
           path: results-post.jtl
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-put
           path: results-put.jtl
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-patch
           path: results-patch.jtl
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
+
       - name: Upload Results
         uses: actions/upload-artifact@v2
         with:
           name: jmeter-results-delete
           path: results-delete.jtl
-
-      - name: Analyze Results with Latency Lingo
-        uses: latency-lingo/github-action@v0.0.2
-        with:
-          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
-          file: results-get.jtl
-          label: Get API Performance Test
-          format: jmeter
-      - name: Analyze Results with Latency Lingo
-        uses: latency-lingo/github-action@v0.0.2
-        with:
-          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
-          file: results-post.jtl
-          label: Post API Performance Test
-          format: jmeter
-      - name: Analyze Results with Latency Lingo
-        uses: latency-lingo/github-action@v0.0.2
-        with:
-          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
-          file: results-put.jtl
-          label: Put API Performance Test
-          format: jmeter
-      - name: Analyze Results with Latency Lingo
-        uses: latency-lingo/github-action@v0.0.2
-        with:
-          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
-          file: results-patch.jtl
-          label: Patch API Performance Test
-          format: jmeter
-      - name: Analyze Results with Latency Lingo
-        uses: latency-lingo/github-action@v0.0.2
-        with:
-          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
-          file: results-delete.jtl
-          label: Delete API Performance Test
-          format: jmeter
+        env:
+          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
+          MONGODB_AUTH_DB: admin
+          MONGODB_DB: school
+          MONGODB_PORT: 27017
+          MONGODB_HOST: localhost
