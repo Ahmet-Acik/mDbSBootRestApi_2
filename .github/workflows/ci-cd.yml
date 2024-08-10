@@ -170,60 +170,16 @@ jobs:
           MONGODB_PORT: 27017
           MONGODB_HOST: localhost
 
-      - name: Run JMeter performance tests for GET
+      - name: Run JMeter performance tests
         run: |
           jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
           jmeter -g results-get.jtl -o report-get
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
-
-      - name: Run JMeter performance tests for POST
-        run: |
           jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
           jmeter -g results-post.jtl -o report-post
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
-
-      - name: Run JMeter performance tests for PUT
-        run: |
           jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
           jmeter -g results-put.jtl -o report-put
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
-
-      - name: Run JMeter performance tests for PATCH
-        run: |
           jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
           jmeter -g results-patch.jtl -o report-patch
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
-
-      - name: Run JMeter performance tests for DELETE
-        run: |
           jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
           jmeter -g results-delete.jtl -o report-delete
         shell: /usr/bin/bash -e {0}
