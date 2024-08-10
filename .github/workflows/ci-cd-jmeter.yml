@@ -31,12 +31,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Verify Java Installation
+        run: |
+          if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
+            echo "Java installation not found!"
+            exit 1
+          fi
+
       - name: Set environment variables
         run: |
           echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
           echo "MONGODB_DB=school" >> $GITHUB_ENV
           echo "MONGODB_PORT=27017" >> $GITHUB_ENV
           echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
+          echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
 
       - name: Wait for MongoDB to start
         run: |
