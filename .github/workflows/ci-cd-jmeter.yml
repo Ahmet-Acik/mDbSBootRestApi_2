@@ -22,144 +22,61 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Docker
+        run: |
+          docker run -d --name jmeter-container -v ${{ github.workspace }}:/workspace -w /workspace openjdk:17-jdk-slim tail -f /dev/null
+
       - name: Install JMeter
-        run: sudo apt-get install -y jmeter
-
-      - name: Install JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Verify Java Installation
         run: |
-          if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
-            echo "Java installation not found!"
-            exit 1
-          fi
-        shell: /usr/bin/bash -e {0}
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-
-      - name: Verify toolchains.xml
-        run: |
-          if [ ! -f /home/runner/.m2/toolchains.xml ]; then
-            echo "toolchains.xml not found!"
-            exit 1
-          fi
-
-      - name: Verify settings.xml
-        run: |
-          if [ ! -f /home/runner/.m2/settings.xml ]; then
-            echo "settings.xml not found!"
-            exit 1
-          fi
+          docker exec jmeter-container apt-get update
+          docker exec jmeter-container apt-get install -y jmeter
 
       - name: Set environment variables
         run: |
-          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
-          echo "MONGODB_DB=school" >> $GITHUB_ENV
-          echo "MONGODB_PORT=27017" >> $GITHUB_ENV
-          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
-          echo "JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64" >> $GITHUB_ENV
-
-      - name: Wait for MongoDB to start
-        run: |
-          for i in `seq 1 60`; do
-            nc -z localhost 27017 && echo "MongoDB is up" && exit 0
-            echo "Waiting for MongoDB..."
-            sleep 5
-          done
-          echo "MongoDB did not start in time" && exit 1
-
-      - name: List Java Directory Contents
-        run: ls -la /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin
+          docker exec jmeter-container sh -c "echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> /etc/profile"
+          docker exec jmeter-container sh -c "echo 'export PATH=\$JAVA_HOME/bin:\$PATH' >> /etc/profile"
+          docker exec jmeter-container sh -c "source /etc/profile"
 
       - name: Print Environment Variables
         run: |
-          echo "JAVA_HOME: $JAVA_HOME"
-          echo "JAVA_HOME_17_X64: $JAVA_HOME_17_X64"
+          docker exec jmeter-container sh -c "echo 'JAVA_HOME: \$JAVA_HOME'"
+          docker exec jmeter-container sh -c "echo 'PATH: \$PATH'"
+
+      - name: List Java Directory Contents
+        run: docker exec jmeter-container ls -la /usr/lib/jvm/java-17-openjdk-amd64/bin
 
       - name: Check Java Version
-        run: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java -version
+        run: docker exec jmeter-container java -version
 
       - name: Run JMeter Tests for GET
-        uses: QAInsights/PerfAction@v3.1
-        with:
-          test-plan-path: src/test/resources/performance/get-api-performance-test-plan.jmx
+        run: |
+          docker exec jmeter-container jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
         env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Run JMeter Tests for POST
-        uses: QAInsights/PerfAction@v3.1
-        with:
-          test-plan-path: src/test/resources/performance/post-api-performance-test-plan.jmx
+        run: |
+          docker exec jmeter-container jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
         env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Run JMeter Tests for PUT
-        uses: QAInsights/PerfAction@v3.1
-        with:
-          test-plan-path: src/test/resources/performance/put-api-performance-test-plan.jmx
+        run: |
+          docker exec jmeter-container jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
         env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Run JMeter Tests for PATCH
-        uses: QAInsights/PerfAction@v3.1
-        with:
-          test-plan-path: src/test/resources/performance/patch-api-performance-test-plan.jmx
+        run: |
+          docker exec jmeter-container jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
         env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Run JMeter Tests for DELETE
-        uses: QAInsights/PerfAction@v3.1
-        with:
-          test-plan-path: src/test/resources/performance/delete-api-performance-test-plan.jmx
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64
-          MONGODB_AUTH_DB: admin
-          MONGODB_DB: school
-          MONGODB_PORT: 27017
-          MONGODB_HOST: localhost
-
-      - name: Verify JMeter Results
         run: |
-          if [ ! -f results-get.jtl ]; then
-            echo "JMeter results file for GET not found!"
-            exit 1
-          fi
-          if [ ! -f results-post.jtl ]; then
-            echo "JMeter results file for POST not found!"
-            exit 1
-          fi
-          if [ ! -f results-put.jtl ]; then
-            echo "JMeter results file for PUT not found!"
-            exit 1
-          fi
-          if [ ! -f results-patch.jtl ]; then
-            echo "JMeter results file for PATCH not found!"
-            exit 1
-          fi
-          if [ ! -f results-delete.jtl ]; then
-            echo "JMeter results file for DELETE not found!"
-            exit 1
+          docker exec jmeter-container jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
       - name: Upload Results for GET
         uses: actions/upload-artifact@v2
