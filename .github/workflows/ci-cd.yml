@@ -201,7 +201,6 @@
 #          MONGODB_DB: school
 #          MONGODB_PORT: 27017
 #          MONGODB_HOST: localhost
-
 name: CI/CD Pipeline
 
 on:
