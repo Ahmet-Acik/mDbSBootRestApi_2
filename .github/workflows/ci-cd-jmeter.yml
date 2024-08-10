@@ -34,8 +34,11 @@ jobs:
       - name: Verify Java Installation
         run: |
           if [ ! -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.12-7/x64/bin/java ]; then
-            echo "Java installation not found!"
-            exit 1
+            echo "Java installation not found! Installing manually..."
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
+            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+            echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
           fi
 
       - name: Set environment variables
