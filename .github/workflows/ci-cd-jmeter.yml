@@ -31,6 +31,9 @@ jobs:
           docker exec jmeter-container apt-get update
           docker exec jmeter-container apt-get install -y jmeter
 
+      - name: List JVM Directory
+        run: docker exec jmeter-container ls -la /usr/lib/jvm
+
       - name: Set environment variables
         run: |
           docker exec jmeter-container sh -c "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
