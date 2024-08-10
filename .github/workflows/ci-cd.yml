@@ -158,16 +158,26 @@ jobs:
         run: sudo apt-get install -y jmeter
 
       - name: Run JMeter performance tests for GET
-        run: jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl -e -o report-get
+        run: |
+          jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+          jmeter -g results-get.jtl -o report-get
 
       - name: Run JMeter performance tests for POST
-        run: jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl -e -o report-post
+        run: |
+          jmeter -n -t src/test/resources/performance/post-api-performance-test-plan.jmx -l results-post.jtl
+          jmeter -g results-post.jtl -o report-post
 
       - name: Run JMeter performance tests for PUT
-        run: jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl -e -o report-put
+        run: |
+          jmeter -n -t src/test/resources/performance/put-api-performance-test-plan.jmx -l results-put.jtl
+          jmeter -g results-put.jtl -o report-put
 
       - name: Run JMeter performance tests for PATCH
-        run: jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl -e -o report-patch
+        run: |
+          jmeter -n -t src/test/resources/performance/patch-api-performance-test-plan.jmx -l results-patch.jtl
+          jmeter -g results-patch.jtl -o report-patch
 
       - name: Run JMeter performance tests for DELETE
-        run: jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl -e -o report-delete
+        run: |
+          jmeter -n -t src/test/resources/performance/delete-api-performance-test-plan.jmx -l results-delete.jtl
+          jmeter -g results-delete.jtl -o report-delete
