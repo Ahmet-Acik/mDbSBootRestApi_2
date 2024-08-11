@@ -35,36 +35,12 @@ jobs:
           docker exec jmeter-container mv apache-jmeter-5.4.1 /opt/jmeter
           docker exec jmeter-container ln -s /opt/jmeter/bin/jmeter /usr/local/bin/jmeter
 
-      - name: List JVM Directory
-        run: docker exec jmeter-container ls -la /usr/lib/jvm || echo "Directory /usr/lib/jvm does not exist"
-
-      - name: Set environment variables
-        run: |
-          docker exec jmeter-container sh -c "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
-          docker exec jmeter-container sh -c "export PATH=\$JAVA_HOME/bin:\$PATH"
-
-      - name: Print Environment Variables
-        run: |
-          docker exec jmeter-container sh -c "echo 'JAVA_HOME: \$JAVA_HOME'"
-          docker exec jmeter-container sh -c "echo 'PATH: \$PATH'"
-
-      - name: List Java Directory Contents
-        run: docker exec jmeter-container ls -la /usr/lib/jvm/java-11-openjdk-amd64/bin
-
-      - name: Check Java Version
-        run: docker exec jmeter-container java -version
-
       - name: Verify JMeter Test Plan Path
         run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
-
-      - name: Check JMeter Version
-        run: docker exec jmeter-container jmeter -v
 
       - name: Run JMeter Tests for GET
         run: |
           docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Verify JTL File for GET
         run: |
@@ -88,42 +64,6 @@ jobs:
         run: |
           set -e
           ./latency-lingo-cli publish --file "results-get.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "GET API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
-          result=$(grep "Test run status" output.log | awk '{print $6}')
-          echo "result=$result" >> $GITHUB_OUTPUT
-        env:
-          LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
-
-      - name: Analyze Results for POST with Latency Lingo
-        run: |
-          set -e
-          ./latency-lingo-cli publish --file "results-post.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "POST API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
-          result=$(grep "Test run status" output.log | awk '{print $6}')
-          echo "result=$result" >> $GITHUB_OUTPUT
-        env:
-          LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
-
-      - name: Analyze Results for PUT with Latency Lingo
-        run: |
-          set -e
-          ./latency-lingo-cli publish --file "results-put.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "PUT API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
-          result=$(grep "Test run status" output.log | awk '{print $6}')
-          echo "result=$result" >> $GITHUB_OUTPUT
-        env:
-          LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
-
-      - name: Analyze Results for PATCH with Latency Lingo
-        run: |
-          set -e
-          ./latency-lingo-cli publish --file "results-patch.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "PATCH API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
-          result=$(grep "Test run status" output.log | awk '{print $6}')
-          echo "result=$result" >> $GITHUB_OUTPUT
-        env:
-          LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
-
-      - name: Analyze Results for DELETE with Latency Lingo
-        run: |
-          set -e
-          ./latency-lingo-cli publish --file "results-delete.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "DELETE API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
           result=$(grep "Test run status" output.log | awk '{print $6}')
           echo "result=$result" >> $GITHUB_OUTPUT
         env:
