@@ -81,6 +81,9 @@ jobs:
           done
           echo "Spring Boot did not start in time" && exit 1
 
+      - name: Check Spring Boot logs
+        run: docker logs jmeter-container
+
       - name: Verify JMeter Test Plan Path
         run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
 
