@@ -28,66 +28,32 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set environment variables
-        run: |
-          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
-          echo "MONGODB_DB=school" >> $GITHUB_ENV
-          echo "MONGODB_PORT=27017" >> $GITHUB_ENV
-          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
-
-      - name: Wait for MongoDB to start
-        run: |
-          for i in `seq 1 60`; do
-            nc -z localhost 27017 && echo "MongoDB is up" && exit 0
-            echo "Waiting for MongoDB..."
-            sleep 2
-          done
-          echo "MongoDB did not start in time" && exit 1
-
-      - name: Check MongoDB logs
-        run: docker logs $(docker ps -q --filter ancestor=mongo:latest)
-
       - name: Build with Maven
         run: mvn clean install -e -X
 
-      - name: Set up Docker
-        run: |
-          docker run -d --name jmeter-container -v ${{ github.workspace }}:/workspace -w /workspace openjdk:11-jdk-slim tail -f /dev/null
+      - name: Set up Docker Compose
+        run: docker-compose up -d
 
-      - name: Install JMeter
-        run: |
-          docker exec jmeter-container apt-get update
-          docker exec jmeter-container apt-get install -y wget
-          docker exec jmeter-container wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.1.tgz
-          docker exec jmeter-container tar -xzf apache-jmeter-5.4.1.tgz
-          docker exec jmeter-container mv apache-jmeter-5.4.1 /opt/jmeter
-          docker exec jmeter-container ln -s /opt/jmeter/bin/jmeter /usr/local/bin/jmeter
-
-      - name: Start REST API
-        run: |
-          docker exec -d jmeter-container java -jar target/*.jar
-
-      - name: Install curl
-        run: |
-          docker exec jmeter-container apt-get update
-          docker exec jmeter-container apt-get install -y curl
-
-      - name: Wait for Spring Boot to start
+      - name: Wait for Spring Boot to be healthy
         run: |
           for i in `seq 1 60`; do
-            docker exec jmeter-container curl -s http://localhost:8080/actuator/health | grep '"status":"UP"' && echo "Spring Boot is up" && exit 0
+            if [ "$(docker inspect --format='{{.State.Health.Status}}' springboot)" == "healthy" ]; then
+              echo "Spring Boot is up"
+              exit 0
+            fi
             echo "Waiting for Spring Boot..."
-            sleep 1
+            sleep 5
           done
-          echo "Spring Boot did not start in time"
-          docker logs jmeter-container --tail 100
+          echo "Spring Boot did not become healthy in time"
+          docker logs springboot --tail 100
           exit 1
 
       - name: Verify JMeter Test Plan Path
-        run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
+        run: docker exec $(docker ps -q --filter name=springboot) ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
+
       - name: Run JMeter Tests for GET
         run: |
-          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+          docker exec $(docker ps -q --filter name=springboot) jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
 
       - name: Verify JTL File for GET
         run: |
