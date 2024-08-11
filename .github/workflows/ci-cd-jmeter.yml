@@ -87,31 +87,71 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Upload Results for GET
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results-get
           path: results-get.jtl
 
       - name: Upload Results for POST
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results-post
           path: results-post.jtl
 
       - name: Upload Results for PUT
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results-put
           path: results-put.jtl
 
       - name: Upload Results for PATCH
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results-patch
           path: results-patch.jtl
 
       - name: Upload Results for DELETE
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: jmeter-results-delete
           path: results-delete.jtl
+
+      - name: Analyze Results for GET with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-get.jtl
+          label: GET API Performance Test Plan
+          format: jmeter
+
+      - name: Analyze Results for POST with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-post.jtl
+          label: POST API Performance Test Plan
+          format: jmeter
+
+      - name: Analyze Results for PUT with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-put.jtl
+          label: PUT API Performance Test Plan
+          format: jmeter
+
+      - name: Analyze Results for PATCH with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-patch.jtl
+          label: PATCH API Performance Test Plan
+          format: jmeter
+
+      - name: Analyze Results for DELETE with Latency Lingo
+        uses: latency-lingo/github-action@v0.0.2
+        with:
+          api-key: ${{ secrets.LATENCY_LINGO_API_KEY }}
+          file: results-delete.jtl
+          label: DELETE API Performance Test Plan
+          format: jmeter
