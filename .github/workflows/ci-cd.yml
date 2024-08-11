@@ -1,39 +1,39 @@
-name: CI/CD Pipeline - JMeter
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - master
+      - master # Trigger the workflow on push events to the master branch
   pull_request:
     branches:
-      - master
+      - master # Trigger the workflow on pull request events to the master branch
 
 jobs:
-  jmeter-tests:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
 
     services:
       mongo:
-        image: mongo:latest
+        image: mongo:latest # Use the latest MongoDB image
         ports:
-          - 27017:27017
+          - 27017:27017 # Map port 27017 on the host to port 27017 on the container
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Checkout the repository code
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4 # Set up Java Development Kit (JDK) version 17
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '17' # Specify the Java version
+          distribution: 'temurin' # Specify the JDK distribution
 
       - name: Set environment variables
         run: |
-          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV
-          echo "MONGODB_DB=school" >> $GITHUB_ENV
-          echo "MONGODB_PORT=27017" >> $GITHUB_ENV
-          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV
+          echo "MONGODB_AUTH_DB=admin" >> $GITHUB_ENV # Set MongoDB authentication database
+          echo "MONGODB_DB=school" >> $GITHUB_ENV # Set MongoDB database name
+          echo "MONGODB_PORT=27017" >> $GITHUB_ENV # Set MongoDB port
+          echo "MONGODB_HOST=localhost" >> $GITHUB_ENV # Set MongoDB host
 
       - name: Wait for MongoDB to start
         run: |
@@ -42,70 +42,36 @@ jobs:
             echo "Waiting for MongoDB..."
             sleep 5
           done
-          echo "MongoDB did not start in time" && exit 1
+          echo "MongoDB did not start in time" && exit 1 # Wait for MongoDB to start, with a timeout
 
       - name: Check MongoDB logs
-        run: docker logs $(docker ps -q --filter ancestor=mongo:latest)
+        run: docker logs $(docker ps -q --filter ancestor=mongo:latest) # Check the logs of the MongoDB container
 
       - name: Build with Maven
-        run: mvn clean install -e -X
+        run: mvn clean install -e -X # Build the project using Maven
 
-      - name: Set up Docker
-        run: |
-          docker run -d --name jmeter-container -v ${{ github.workspace }}:/workspace -w /workspace openjdk:11-jdk-slim tail -f /dev/null
-
-      - name: Install JMeter
-        run: |
-          docker exec jmeter-container apt-get update
-          docker exec jmeter-container apt-get install -y wget
-          docker exec jmeter-container wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.1.tgz
-          docker exec jmeter-container tar -xzf apache-jmeter-5.4.1.tgz
-          docker exec jmeter-container mv apache-jmeter-5.4.1 /opt/jmeter
-          docker exec jmeter-container ln -s /opt/jmeter/bin/jmeter /usr/local/bin/jmeter
-
-      - name: Start REST API
-        run: |
-          docker exec -d jmeter-container java -jar target/*.jar
+      - name: Start Spring Boot application
+        run: mvn spring-boot:run & # Start the Spring Boot application
+        env:
+          SPRING_PROFILES_ACTIVE: test # Set the active Spring profile to 'test'
 
       - name: Wait for Spring Boot to start
         run: |
           for i in `seq 1 60`; do
-            docker exec jmeter-container nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
+            nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
             echo "Waiting for Spring Boot..."
             sleep 5
           done
-          echo "Spring Boot did not start in time" && exit 1
+          echo "Spring Boot did not start in time" && exit 1 # Wait for Spring Boot to start, with a timeout
 
-      - name: Verify JMeter Test Plan Path
-        run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
+      - name: Run smoke tests
+        run: mvn test -P smoke-tests -e -X # Run smoke tests using Maven
 
-      - name: Run JMeter Tests for GET
-        run: |
-          docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+      - name: Run unit tests
+        run: mvn test -e -X # Run unit tests using Maven
 
-      - name: Verify JTL File for GET
-        run: |
-          head -n 1 results-get.jtl
-          if ! grep -q "timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect" results-get.jtl; then
-            echo "Error: results-get.jtl is missing required columns" >&2
-            exit 1
-          fi
+      - name: Run integration tests
+        run: mvn failsafe:integration-test -e -X # Run integration tests using Maven
 
-      - name: Upload Results for GET
-        uses: actions/upload-artifact@v4
-        with:
-          name: jmeter-results-get
-          path: results-get.jtl
-
-      - name: Install Latency Lingo CLI
-        run: |
-          curl -L https://github.com/latency-lingo/cli/releases/latest/download/latency-lingo-cli_linux_amd64.tar.gz | tar -xz
-
-      - name: Analyze Results for GET with Latency Lingo
-        run: |
-          set -e
-          ./latency-lingo-cli publish --file "results-get.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "GET API Performance Test Plan" --format "jmeter" --env "production" > output.log || { cat output.log; exit 1; }
-          result=$(grep "Test run status" output.log | awk '{print $6}')
-          echo "result=$result" >> $GITHUB_OUTPUT
-        env:
-          LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
+      - name: Run Cucumber tests
+        run: mvn test -P cucumber-tests -Dcucumber.options="--plugin pretty" -e -X # Run Cucumber tests using Maven
