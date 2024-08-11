@@ -45,7 +45,7 @@ jobs:
       - name: Verify JTL File for GET
         run: |
           head -n 1 results-get.jtl
-          if ! grep -q "success,allThreads,elapsed,timeStamp,label" results-get.jtl; then
+          if ! grep -q "timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect" results-get.jtl; then
             echo "Error: results-get.jtl is missing required columns" >&2
             exit 1
           fi
