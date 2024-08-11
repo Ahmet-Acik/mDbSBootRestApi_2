@@ -1,3 +1,9 @@
+### Plan
+1. **Fix JMeter Test Plan**: Ensure the JMeter test plan is correctly formatted and does not contain forbidden classes.
+2. **Validate JMX File**: Use the `JMXValidator` to validate the JMX file before running the tests.
+
+### Updated Workflow
+  ```yaml
 name: CI/CD Pipeline - JMeter
 
 on:
@@ -30,6 +36,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jmeter
 
+      - name: Validate JMX Files
+        run: java -cp target/DockerSpringBootMongoDB-0.0.1-SNAPSHOT.jar com.ahmet.DockerSpringBootMongoDB.validator.JMXValidator
+
       - name: Run JMeter Tests for GET
         run: |
           jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
@@ -60,3 +69,4 @@ jobs:
           echo "result=$result" >> $GITHUB_OUTPUT
         env:
           LATENCY_LINGO_API_KEY: ${{ secrets.LATENCY_LINGO_API_KEY }}
+  ```
