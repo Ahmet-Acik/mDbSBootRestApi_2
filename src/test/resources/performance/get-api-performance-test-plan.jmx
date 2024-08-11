@@ -81,7 +81,8 @@
               <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
               <assertionsResultsToSave>0</assertionsResultsToSave>
               <bytes>false</bytes>
-              <sentBytes>false</sentBytes>
+              <!-- Removed problematic element -->
+              <!-- <sentBytes>false</sentBytes> -->
               <url>false</url>
               <threadCounts>true</threadCounts>
               <idleTime>false</idleTime>
