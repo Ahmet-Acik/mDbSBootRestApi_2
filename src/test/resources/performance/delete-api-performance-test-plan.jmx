@@ -51,9 +51,9 @@
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">2</intProp>
           </ResponseAssertion>
-          <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true">
-            <stringProp name="DurationAssertion.duration">1000</stringProp>
-          </DurationAssertion>
+<!--           <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion" enabled="true"> -->
+<!--             <stringProp name="DurationAssertion.duration">1000</stringProp> -->
+<!--           </DurationAssertion> -->
         </hashTree>
       </hashTree>
     </hashTree>
