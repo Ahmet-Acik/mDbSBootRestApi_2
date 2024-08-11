@@ -40,7 +40,7 @@ jobs:
           for i in `seq 1 60`; do
             nc -z localhost 27017 && echo "MongoDB is up" && exit 0
             echo "Waiting for MongoDB..."
-            sleep 5
+            sleep 2
           done
           echo "MongoDB did not start in time" && exit 1
 
@@ -79,10 +79,9 @@ jobs:
             echo "Waiting for Spring Boot..."
             sleep 5
           done
-          echo "Spring Boot did not start in time" && exit 1
-
-      - name: Check Spring Boot logs
-        run: docker logs jmeter-container
+          echo "Spring Boot did not start in time"
+          docker logs jmeter-container
+          exit 1
 
       - name: Verify JMeter Test Plan Path
         run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
