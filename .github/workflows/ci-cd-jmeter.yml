@@ -36,11 +36,11 @@ jobs:
           docker exec jmeter-container ln -s /opt/jmeter/bin/jmeter /usr/local/bin/jmeter
 
       - name: List JVM Directory
-        run: docker exec jmeter-container ls -la /usr/lib/jvm
+        run: docker exec jmeter-container ls -la /usr/lib/jvm || echo "Directory /usr/lib/jvm does not exist"
 
       - name: Set environment variables
         run: |
-          docker exec jmeter-container sh -c "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk"
+          docker exec jmeter-container sh -c "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
           docker exec jmeter-container sh -c "export PATH=\$JAVA_HOME/bin:\$PATH"
 
       - name: Print Environment Variables
@@ -49,7 +49,7 @@ jobs:
           docker exec jmeter-container sh -c "echo 'PATH: \$PATH'"
 
       - name: List Java Directory Contents
-        run: docker exec jmeter-container ls -la /usr/lib/jvm/java-11-openjdk/bin
+        run: docker exec jmeter-container ls -la /usr/lib/jvm/java-11-openjdk-amd64/bin
 
       - name: Check Java Version
         run: docker exec jmeter-container java -version
@@ -64,7 +64,7 @@ jobs:
         run: |
           docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
         env:
-          JAVA_HOME: /usr/lib/jvm/java-11-openjdk
+          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
       - name: Verify JTL File for GET
         run: |
