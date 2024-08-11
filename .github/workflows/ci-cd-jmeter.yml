@@ -29,7 +29,11 @@ jobs:
       - name: Install JMeter
         run: |
           docker exec jmeter-container apt-get update
-          docker exec jmeter-container apt-get install -y jmeter
+          docker exec jmeter-container apt-get install -y wget
+          docker exec jmeter-container wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.4.1.tgz
+          docker exec jmeter-container tar -xzf apache-jmeter-5.4.1.tgz
+          docker exec jmeter-container mv apache-jmeter-5.4.1 /opt/jmeter
+          docker exec jmeter-container ln -s /opt/jmeter/bin/jmeter /usr/local/bin/jmeter
 
       - name: List JVM Directory
         run: docker exec jmeter-container ls -la /usr/lib/jvm
