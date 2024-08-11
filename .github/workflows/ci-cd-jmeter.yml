@@ -67,6 +67,11 @@ jobs:
         run: |
           docker exec -d jmeter-container java -jar target/*.jar
 
+      - name: Install netcat
+        run: |
+          docker exec jmeter-container apt-get update
+          docker exec jmeter-container apt-get install -y netcat
+
       - name: Wait for Spring Boot to start
         run: |
           for i in `seq 1 60`; do
