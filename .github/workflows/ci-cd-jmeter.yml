@@ -77,10 +77,10 @@ jobs:
           for i in `seq 1 60`; do
             docker exec jmeter-container nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
             echo "Waiting for Spring Boot..."
-            sleep 5
+            sleep 1
           done
           echo "Spring Boot did not start in time"
-          docker logs jmeter-container
+          docker logs jmeter-container --tail 100
           exit 1
 
       - name: Verify JMeter Test Plan Path
