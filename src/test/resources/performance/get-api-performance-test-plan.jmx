@@ -54,7 +54,6 @@
         </hashTree>
       </hashTree>
     </hashTree>
-    <hashTree/>
   </hashTree>
   <hashTree>
     <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
