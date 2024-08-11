@@ -66,27 +66,27 @@
           <timestamp>true</timestamp>
           <success>true</success>
           <label>true</label>
-          <code>false</code>
-          <message>false</message>
-          <threadName>false</threadName>
-          <dataType>false</dataType>
-          <encoding>false</encoding>
-          <assertions>false</assertions>
-          <subresults>false</subresults>
-          <responseData>false</responseData>
-          <samplerData>false</samplerData>
-          <xml>false</xml>
+          <code>true</code>
+          <message>true</message>
+          <threadName>true</threadName>
+          <dataType>true</dataType>
+          <encoding>true</encoding>
+          <assertions>true</assertions>
+          <subresults>true</subresults>
+          <responseData>true</responseData>
+          <samplerData>true</samplerData>
+          <xml>true</xml>
           <fieldNames>true</fieldNames>
-          <responseHeaders>false</responseHeaders>
-          <requestHeaders>false</requestHeaders>
-          <responseDataOnError>false</responseDataOnError>
-          <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+          <responseHeaders>true</responseHeaders>
+          <requestHeaders>true</requestHeaders>
+          <responseDataOnError>true</responseDataOnError>
+          <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
           <assertionsResultsToSave>0</assertionsResultsToSave>
-          <bytes>false</bytes>
-          <url>false</url>
+          <bytes>true</bytes>
+          <url>true</url>
           <threadCounts>true</threadCounts>
-          <idleTime>false</idleTime>
-          <connectTime>false</connectTime>
+          <idleTime>true</idleTime>
+          <connectTime>true</connectTime>
         </value>
       </objProp>
     </ResultCollector>
