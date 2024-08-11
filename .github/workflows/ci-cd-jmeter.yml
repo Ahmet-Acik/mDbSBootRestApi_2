@@ -122,6 +122,7 @@ jobs:
 
       - name: Analyze Results for GET with Latency Lingo
         run: |
+          set -e
           ./latency-lingo-cli publish --file "results-get.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "GET API Performance Test Plan" --format "jmeter" --env "production" > output.log
           cat output.log
           result=$(grep "Test run status" output.log | awk '{print $6}')
@@ -131,6 +132,7 @@ jobs:
 
       - name: Analyze Results for POST with Latency Lingo
         run: |
+          set -e
           ./latency-lingo-cli publish --file "results-post.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "POST API Performance Test Plan" --format "jmeter" --env "production" > output.log
           cat output.log
           result=$(grep "Test run status" output.log | awk '{print $6}')
@@ -140,6 +142,7 @@ jobs:
 
       - name: Analyze Results for PUT with Latency Lingo
         run: |
+          set -e
           ./latency-lingo-cli publish --file "results-put.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "PUT API Performance Test Plan" --format "jmeter" --env "production" > output.log
           cat output.log
           result=$(grep "Test run status" output.log | awk '{print $6}')
@@ -149,6 +152,7 @@ jobs:
 
       - name: Analyze Results for PATCH with Latency Lingo
         run: |
+          set -e
           ./latency-lingo-cli publish --file "results-patch.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "PATCH API Performance Test Plan" --format "jmeter" --env "production" > output.log
           cat output.log
           result=$(grep "Test run status" output.log | awk '{print $6}')
@@ -158,6 +162,7 @@ jobs:
 
       - name: Analyze Results for DELETE with Latency Lingo
         run: |
+          set -e
           ./latency-lingo-cli publish --file "results-delete.jtl" --api-key "${{ secrets.LATENCY_LINGO_API_KEY }}" --label "DELETE API Performance Test Plan" --format "jmeter" --env "production" > output.log
           cat output.log
           result=$(grep "Test run status" output.log | awk '{print $6}')
