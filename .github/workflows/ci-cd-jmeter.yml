@@ -67,15 +67,15 @@ jobs:
         run: |
           docker exec -d jmeter-container java -jar target/*.jar
 
-      - name: Install netcat
+      - name: Install curl
         run: |
           docker exec jmeter-container apt-get update
-          docker exec jmeter-container apt-get install -y netcat
+          docker exec jmeter-container apt-get install -y curl
 
       - name: Wait for Spring Boot to start
         run: |
           for i in `seq 1 60`; do
-            docker exec jmeter-container nc -z localhost 8080 && echo "Spring Boot is up" && exit 0
+            docker exec jmeter-container curl -s http://localhost:8080/actuator/health | grep '"status":"UP"' && echo "Spring Boot is up" && exit 0
             echo "Waiting for Spring Boot..."
             sleep 1
           done
@@ -85,7 +85,6 @@ jobs:
 
       - name: Verify JMeter Test Plan Path
         run: docker exec jmeter-container ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
-
       - name: Run JMeter Tests for GET
         run: |
           docker exec jmeter-container jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
