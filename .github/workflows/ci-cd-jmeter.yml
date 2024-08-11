@@ -12,12 +12,6 @@ jobs:
   jmeter-tests:
     runs-on: ubuntu-latest
 
-    services:
-      mongo:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,38 +22,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Docker Compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
       - name: Build with Maven
         run: mvn clean install -e -X
 
-      - name: Set up Docker Compose
-        run: docker-compose up -d
-
-      - name: Wait for Spring Boot to be healthy
+      - name: Install JMeter
         run: |
-          for i in `seq 1 60`; do
-            if [ "$(docker inspect --format='{{.State.Health.Status}}' springboot)" == "healthy" ]; then
-              echo "Spring Boot is up"
-              exit 0
-            fi
-            echo "Waiting for Spring Boot..."
-            sleep 5
-          done
-          echo "Spring Boot did not become healthy in time"
-          docker logs springboot --tail 100
-          exit 1
-
-      - name: Verify JMeter Test Plan Path
-        run: docker exec $(docker ps -q --filter name=springboot) ls -la /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx
+          sudo apt-get update
+          sudo apt-get install -y jmeter
 
       - name: Run JMeter Tests for GET
         run: |
-          docker exec $(docker ps -q --filter name=springboot) jmeter -n -t /workspace/src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
+          jmeter -n -t src/test/resources/performance/get-api-performance-test-plan.jmx -l results-get.jtl
 
       - name: Verify JTL File for GET
         run: |
